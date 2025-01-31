@@ -8,10 +8,10 @@ Our vision is to create a user-friendly and secure platform where individuals ca
 We aim to foster collaboration and community building by providing a reliable and intuitive chat application.
 
 ## Technology Stack
-Language: TypeScript 
-Server Framework: Next.js 
-Frontend: React 
-Database: MongoDB 
+Language: TypeScript   
+Server Framework: Next.js   
+Frontend: React   
+Database: MongoDB   
 
 - Used TypeScript for type-safe development and enhanced code reliability
 - Next.js handles server-side rendering, routing, and application architecture
