@@ -9,7 +9,7 @@
 - David Cimpoiasu - 40281114 - @Cimpo1
 - Ella Ange Akaliza - 40270048 - @Ellakaliza
 - Quinton Shannon - 40283158 - @qrs-programmer
-- Rita Kardachian - 40283698 - @Ririkard
+- Rita Kardachian - 40283698 - @Ririkard - r_kardac@live.concordia.ca
 - Victor Bruson - 40284702 - @VictorBruson
 - Ryo Sato - 40279749 - @RyoSat0
 - Ya Yi Chen - 40286042 - @afkCYa
