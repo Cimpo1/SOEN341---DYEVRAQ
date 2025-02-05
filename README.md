@@ -6,7 +6,7 @@
 
 ## Team
 
-- David Cimpoiasu - 40281114 - @Cimpo1
+- David Cimpoiasu - 40281114 - @Cimpo1 - david.cimpoiasu@gmail.com
 - Ella Ange Akaliza - 40270048 - @Ellakaliza
 - Quinton Shannon - 40283158 - @qrs-programmer
 - Rita Kardachian - 40283698 - @Ririkard - r_kardac@live.concordia.ca
