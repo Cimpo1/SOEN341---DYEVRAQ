@@ -23,8 +23,7 @@ export default async function LandingPage() {
         <div style={styles.heroContent}>
           <h2 style={styles.heroTitle}>Stay Connected, Anytime, Anywhere.</h2>
           <p style={styles.heroText}>
-            DYEVRAQ is a seamless communication platform that lets you chat,
-            voice call, and video call with your friends, team, or community.
+          DYEVRAQ is a texting platform that allows you to instantly connect with your friends, team, or community.
           </p>
           <div style={styles.heroButtons}>
             <a href="/signup" style={styles.buttonPrimary}>
@@ -36,35 +35,25 @@ export default async function LandingPage() {
           </div>
         </div>
         <div style={styles.heroImageContainer}>
-          <img
-            src="/hero-image.png"
-            alt="Communication Illustration"
-            style={styles.heroImage}
-          />
+          <img src="/logo.png" alt="LOGO" style={styles.heroImage} />
         </div>
       </header>
 
       {/* Features Section */}
       <section style={styles.featuresSection}>
-        <h2 style={styles.featuresTitle}>Why Choose CommConnect?</h2>
+        <h2 style={styles.featuresTitle}>Why Choose DYEVRAQ?</h2>
         <div style={styles.featuresGrid}>
           <div style={styles.featureBox}>
             <h3 style={styles.featureHeading}>Instant Messaging</h3>
-            <p style={styles.featureText}>
-              Fast, secure, and reliable messaging with your contacts.
-            </p>
+            <p style={styles.featureText}>Fast and reliable messaging with your contacts.</p>
           </div>
           <div style={styles.featureBox}>
-            <h3 style={styles.featureHeading}>Voice & Video Calls</h3>
-            <p style={styles.featureText}>
-              Voice and video calls with high-quality audio.
-            </p>
+            <h3 style={styles.featureHeading}>Community Server</h3>
+            <p style={styles.featureText}>Create public or private channels for your teams or friends.</p>
           </div>
           <div style={styles.featureBox}>
-            <h3 style={styles.featureHeading}>Community Servers</h3>
-            <p style={styles.featureText}>
-              Create public or private channels for your teams or friends.
-            </p>
+            <h3 style={styles.featureHeading}>Secure & Easy Access</h3>
+            <p style={styles.featureText}>Your privacy and security are our top priorities.</p>
           </div>
         </div>
       </section>
@@ -98,6 +87,7 @@ const styles: Record<string, CSSProperties> = {
     minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
+    margin:"-10px",
   },
   navbar: {
     display: "flex",
@@ -108,7 +98,8 @@ const styles: Record<string, CSSProperties> = {
     boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
   },
   logo: {
-    fontSize: "25px",
+    fontSize: "27px",
+    paddingLeft: "20px",
     fontWeight: "bold",
     color: "#A5B4FC",
   },
@@ -167,11 +158,12 @@ const styles: Record<string, CSSProperties> = {
     textDecoration: "none",
   },
   heroImageContainer: {
-    marginTop: "20px",
+    marginTop: "50px",
+    marginBottom: "-10px",
   },
   heroImage: {
     width: "100%",
-    maxWidth: "500px",
+    maxWidth: "20%",
     borderRadius: "10px",
     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
   },
