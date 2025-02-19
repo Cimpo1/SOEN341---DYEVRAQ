@@ -1,15 +1,34 @@
-"use client"; // Required for Next.js App Router (if using client-side components)
+
+
 
 import React from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { styles } from "../styles/styles";
+import { auth0 } from "../../lib/auth0";
 
-export default function LandingPage() {
+
+export default async function LandingPage() {
+  const session = await auth0.getSession();
+
+  if (session) {
+    return(
+      <main>
+        <h1>Welcome, {session.user.name}!</h1>
+        <p>Your email is {session.user.email}.</p>
+        <p>Your user ID is {session.user.sub}.</p>
+        <p>You can redirect now!</p>
+        <a href="/home" style={styles.buttonPrimary}>
+              Home
+        </a>
+      </main>
+    )
+  }
+
   return (
     <div style={styles.container}>
       {/* Navbar */}
-      <Navbar></Navbar>
+      <Navbar SESSION={session}></Navbar>
 
       {/* Hero Section */}
       <header style={styles.heroSection}>
@@ -20,10 +39,10 @@ export default function LandingPage() {
             with your friends, team, or community.
           </p>
           <div style={styles.heroButtons}>
-            <a href="/signup" style={styles.buttonPrimary}>
+            <a href="/auth/login?screen_hint=signup" style={styles.buttonPrimary}>
               Get Started
             </a>
-            <a href="/features" style={styles.buttonSecondary}>
+            <a href="/about" style={styles.buttonSecondary}>
               Learn More
             </a>
           </div>
@@ -64,7 +83,7 @@ export default function LandingPage() {
         <p style={styles.ctaText}>
           Create your free account and start chatting instantly.
         </p>
-        <a href="/signup" style={styles.buttonSignupLarge}>
+        <a href="/auth/login?screen_hint=signup" style={styles.buttonSignupLarge}>
           Get Started
         </a>
       </section>

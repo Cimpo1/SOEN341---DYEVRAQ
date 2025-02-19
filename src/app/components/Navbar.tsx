@@ -1,15 +1,34 @@
 import React from "react";
 import { styles } from "../../styles/styles";
+import { auth0 } from "../../../lib/auth0";
 
-export default function Navbar() {
+export default function Navbar(props) {
+  const session = props.SESSION;
+  console.log(session);
+
+  if (session) {
+    return (
+      <nav style={styles.navbar}>
+        <h1 style={styles.logo}>DYEVRAQ</h1>
+        <div>
+          <a href="/home" style={styles.buttonLogin}>
+            Home
+          </a>
+          <a href="/auth/logout" style={styles.buttonSignup}>
+            Logout
+          </a>
+        </div>
+      </nav>
+    );
+  }
   return (
     <nav style={styles.navbar}>
       <h1 style={styles.logo}>DYEVRAQ</h1>
       <div>
-        <a href="/login" style={styles.buttonLogin}>
+        <a href="/auth/login" style={styles.buttonLogin}>
           Login
         </a>
-        <a href="/signup" style={styles.buttonSignup}>
+        <a href="/auth/login?screen_hint=signup" style={styles.buttonSignup}>
           Sign Up
         </a>
       </div>
