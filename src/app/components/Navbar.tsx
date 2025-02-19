@@ -1,6 +1,6 @@
 import React from "react";
 import { styles } from "../../styles/styles";
-import { auth0 } from "../../../lib/auth0";
+
 
 export default function Navbar(props) {
   const session = props.SESSION;
