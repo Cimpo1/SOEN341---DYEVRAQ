@@ -4,7 +4,6 @@ import { auth0 } from "../../../lib/auth0";
 
 export default function Navbar(props) {
   const session = props.SESSION;
-  console.log(session);
 
   if (session) {
     return (
