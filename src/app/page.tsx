@@ -1,16 +1,20 @@
-"use client"; // Required for Next.js App Router (if using client-side components)
-
 import React, { CSSProperties } from "react";
+import { auth0 } from "../../lib/auth0";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await auth0.getSession();
   return (
     <div style={styles.container}>
       {/* Navbar */}
       <nav style={styles.navbar}>
         <h1 style={styles.logo}>DYEVRAQ</h1>
         <div>
-          <a href="/login" style={styles.buttonLogin}>Login</a>
-          <a href="/signup" style={styles.buttonSignup}>Sign Up</a>
+          <a href="/auth/login" style={styles.buttonLogin}>
+            Login
+          </a>
+          <a href="/auth/login?screen_hint=signup" style={styles.buttonSignup}>
+            Sign Up
+          </a>
         </div>
       </nav>
 
@@ -19,15 +23,24 @@ export default function LandingPage() {
         <div style={styles.heroContent}>
           <h2 style={styles.heroTitle}>Stay Connected, Anytime, Anywhere.</h2>
           <p style={styles.heroText}>
-          DYEVRAQ is a seamless communication platform that lets you chat, voice call, and video call with your friends, team, or community.
+            DYEVRAQ is a seamless communication platform that lets you chat,
+            voice call, and video call with your friends, team, or community.
           </p>
           <div style={styles.heroButtons}>
-            <a href="/signup" style={styles.buttonPrimary}>Get Started</a>
-            <a href="/features" style={styles.buttonSecondary}>Learn More</a>
+            <a href="/signup" style={styles.buttonPrimary}>
+              Get Started
+            </a>
+            <a href="/features" style={styles.buttonSecondary}>
+              Learn More
+            </a>
           </div>
         </div>
         <div style={styles.heroImageContainer}>
-          <img src="/hero-image.png" alt="Communication Illustration" style={styles.heroImage} />
+          <img
+            src="/hero-image.png"
+            alt="Communication Illustration"
+            style={styles.heroImage}
+          />
         </div>
       </header>
 
@@ -37,15 +50,21 @@ export default function LandingPage() {
         <div style={styles.featuresGrid}>
           <div style={styles.featureBox}>
             <h3 style={styles.featureHeading}>Instant Messaging</h3>
-            <p style={styles.featureText}>Fast, secure, and reliable messaging with your contacts.</p>
+            <p style={styles.featureText}>
+              Fast, secure, and reliable messaging with your contacts.
+            </p>
           </div>
           <div style={styles.featureBox}>
             <h3 style={styles.featureHeading}>Voice & Video Calls</h3>
-            <p style={styles.featureText}>Voice and video calls with high-quality audio.</p>
+            <p style={styles.featureText}>
+              Voice and video calls with high-quality audio.
+            </p>
           </div>
           <div style={styles.featureBox}>
             <h3 style={styles.featureHeading}>Community Servers</h3>
-            <p style={styles.featureText}>Create public or private channels for your teams or friends.</p>
+            <p style={styles.featureText}>
+              Create public or private channels for your teams or friends.
+            </p>
           </div>
         </div>
       </section>
@@ -53,13 +72,19 @@ export default function LandingPage() {
       {/* Call to Action */}
       <section style={styles.ctaSection}>
         <h2 style={styles.ctaTitle}>Join Millions of Users Today</h2>
-        <p style={styles.ctaText}>Create your free account and start chatting instantly.</p>
-        <a href="/signup" style={styles.buttonSignupLarge}>Get Started</a>
+        <p style={styles.ctaText}>
+          Create your free account and start chatting instantly.
+        </p>
+        <a href="/signup" style={styles.buttonSignupLarge}>
+          Get Started
+        </a>
       </section>
 
       {/* Footer */}
       <footer style={styles.footer}>
-        <p style={styles.footerText}>&copy; 2025 DYEVRAQ. All rights reserved.</p>
+        <p style={styles.footerText}>
+          &copy; 2025 DYEVRAQ. All rights reserved.
+        </p>
       </footer>
     </div>
   );
