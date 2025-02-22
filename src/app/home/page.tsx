@@ -4,10 +4,22 @@ import Footer from "../components/Footer";
 import ChatSidebar from "../components/ChatSidebar";
 import { styles } from "../../styles/styles";
 import { auth0 } from "../../../lib/auth0";
-import HomeContent from "./HomeContent";
 
 export default async function HomePage() {
   const session = await auth0.getSession();
 
-  return <HomeContent initialSession={session} />;
+  return (
+    <div style={styles.container}>
+      <Navbar SESSION={session}></Navbar>
+
+      <div style={{ display: "flex" }}>
+        <ChatSidebar session={session} />
+        <div>
+          <h1>LOGIC TO CREATE USER INFORMATION NEEDS TO BE CREATED</h1>
+        </div>
+      </div>
+
+      <Footer></Footer>
+    </div>
+  );
 }
