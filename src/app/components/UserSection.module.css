@@ -1,0 +1,29 @@
+.section {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(.17,.67,.83,.67);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-left: 3px solid transparent;
+}
+
+.section:hover {
+  background-color: #363636;
+  transform: translateX(8px);
+}
+
+.selected {
+  background-color: #383838;
+  border-left: 3px solid #4F46E5;
+  transform: translateX(12px);
+  transition: all 0.15s cubic-bezier(.17,.67,.83,.67);
+}
+
+.selected:hover {
+  background-color: #3a3a3a;
+  transform: translateX(16px);
+} 
