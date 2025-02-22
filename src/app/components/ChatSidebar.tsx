@@ -13,11 +13,23 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ onUserSelect, session }) => {
   const userPicture = session?.user?.picture;
   const userName = session?.user?.name || "User";
 
+  const users = Array(10)
+    .fill(null)
+    .map((_, index) => ({
+      id: `user-${index}`,
+      picture: userPicture,
+      name: userName,
+    }));
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarContent}>
         <div className={styles.userList}>
-          <UserIcon imageUrl={userPicture} name={userName} />
+          {users.map((user) => (
+            <div key={user.id} className={styles.userIcon}>
+              <UserIcon imageUrl={user.picture} name={user.name} />
+            </div>
+          ))}
         </div>
         <div className={styles.settings}></div>
       </div>
