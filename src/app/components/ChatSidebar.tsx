@@ -4,37 +4,33 @@ import React, { useState, useEffect } from "react";
 import styles from "./ChatSidebar.module.css";
 import UserSection from "./UserSection";
 
+interface User {
+  id: string;
+  picture: string;
+  name: string;
+}
+
 interface ChatSidebarProps {
   onUserSelect?: (userId: string) => void;
   session?: any;
+  users: User[];
+  selectedUserId: string | null;
 }
 
-const ChatSidebar: React.FC<ChatSidebarProps> = ({ onUserSelect, session }) => {
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+const ChatSidebar: React.FC<ChatSidebarProps> = ({
+  onUserSelect,
+  session,
+  users,
+  selectedUserId,
+}) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const userPicture = session?.user?.picture;
-  const userName = session?.user?.name || "User";
-
-  const users = Array(15)
-    .fill(null)
-    .map((_, index) => ({
-      id: `user-${index}`,
-      picture: userPicture,
-      name: userName,
-    }));
-
-  const handleUserClick = (userId: string) => {
-    setSelectedUserId(userId);
-    onUserSelect?.(userId);
-  };
-
   if (!mounted) {
-    return null; 
+    return null;
   }
 
   return (
@@ -46,7 +42,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ onUserSelect, session }) => {
               key={user.id}
               user={user}
               isSelected={selectedUserId === user.id}
-              onClick={() => handleUserClick(user.id)}
+              onClick={() => onUserSelect?.(user.id)}
             />
           ))}
         </div>
