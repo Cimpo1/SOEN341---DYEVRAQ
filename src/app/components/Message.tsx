@@ -36,6 +36,7 @@ const styles = {
   messageContent: {
     display: "flex",
     flexDirection: "column" as const,
+    maxWidth: "100%",
   },
   senderName: {
     fontSize: "0.8rem",
@@ -48,7 +49,10 @@ const styles = {
     borderRadius: "16px",
     position: "relative" as const,
     wordWrap: "break-word" as const,
+    whiteSpace: "pre-wrap" as const,
     minWidth: "80px",
+    maxWidth: "500px",
+    overflowWrap: "break-word" as const,
   },
   ownBubble: {
     backgroundColor: "#4F46E5",
