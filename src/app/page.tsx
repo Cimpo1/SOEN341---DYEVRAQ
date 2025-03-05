@@ -1,28 +1,39 @@
-
-
-
 import React from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { styles } from "../styles/styles";
 import { auth0 } from "../../lib/auth0";
-
+import Image from "next/image";
 
 export default async function LandingPage() {
   const session = await auth0.getSession();
 
   if (session) {
-    return(
+    return (
       <main>
-        <h1>Welcome, {session.user.name}!</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          {session.user.picture && (
+            <Image
+              src={session.user.picture}
+              alt="Profile picture"
+              width={100}
+              height={100}
+              style={{
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+          )}
+          <h1>Welcome, {session.user.name}!</h1>
+        </div>
         <p>Your email is {session.user.email}.</p>
         <p>Your user ID is {session.user.sub}.</p>
         <p>You can redirect now!</p>
         <a href="/home" style={styles.buttonPrimary}>
-              Home
+          Home
         </a>
       </main>
-    )
+    );
   }
 
   return (
@@ -39,7 +50,10 @@ export default async function LandingPage() {
             with your friends, team, or community.
           </p>
           <div style={styles.heroButtons}>
-            <a href="/auth/login?screen_hint=signup" style={styles.buttonPrimary}>
+            <a
+              href="/auth/login?screen_hint=signup"
+              style={styles.buttonPrimary}
+            >
               Get Started
             </a>
             <a href="/about" style={styles.buttonSecondary}>
@@ -83,7 +97,10 @@ export default async function LandingPage() {
         <p style={styles.ctaText}>
           Create your free account and start chatting instantly.
         </p>
-        <a href="/auth/login?screen_hint=signup" style={styles.buttonSignupLarge}>
+        <a
+          href="/auth/login?screen_hint=signup"
+          style={styles.buttonSignupLarge}
+        >
           Get Started
         </a>
       </section>

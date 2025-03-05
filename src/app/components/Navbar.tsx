@@ -1,7 +1,6 @@
 import React from "react";
 import { styles } from "../../styles/styles";
 
-
 export default function Navbar(props) {
   const session = props.SESSION;
 
