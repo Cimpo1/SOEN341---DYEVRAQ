@@ -33,7 +33,7 @@ const UserIcon: React.FC<UserIconProps> = ({
 
   return (
     <div style={iconStyle}>
-      {imageUrl ? (
+      {/* {imageUrl ? (
         <Image
           src={imageUrl}
           alt={name}
@@ -43,7 +43,7 @@ const UserIcon: React.FC<UserIconProps> = ({
         />
       ) : (
         getFirstLetter(name)
-      )}
+      )} */}
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { auth0 } from "../../../lib/auth0";
 
 export default async function HomePage() {
   const session = await auth0.getSession();
-
+  
   return (
     <div style={styles.container}>
       <Navbar SESSION={session} />

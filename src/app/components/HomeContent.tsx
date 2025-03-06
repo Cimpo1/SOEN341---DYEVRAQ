@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChatSidebar from "./ChatSidebar";
 import Welcome from "./Welcome";
 import Chat from "./Chat";
+import axios from "axios";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface User {
   id: string;
@@ -30,6 +32,35 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Generate sample users for now which should eventually come from your backend :(
+  const loggedInUserID = session.user.sub;
+  //const { user, error, isLoading } = useUser();
+  const [conversations, setConversations] = useState([]);
+  // const [OtherUserIDs, setOtherUserIDs] = useState([]);
+  const [ConversationIDs, setConversationIDs] = useState([]);
+
+  useEffect(() => {
+    if (loggedInUserID) {
+      axios
+        .get(`/api/directMessage?userID=${loggedInUserID}`)
+        .then((response) => {
+          console.log("Response data:", response.data);
+
+          // Extract all the GroupIDs into an array
+          const groupIDs = response.data.conversations.map(
+            (conversation) => conversation._id
+          );
+          console.log("Group IDs:", groupIDs);
+
+          // Still set the original conversations data for your component
+          setConversations(response.data.conversations);
+
+          // If you need to store the IDs in state as well
+          setConversationIDs(groupIDs);
+        })
+        .catch((error) => console.error("Error fetching conversations", error));
+    }
+  }, [loggedInUserID]); // Fetch when user is logged in
+
   const users: User[] = Array(15)
     .fill(null)
     .map((_, index) => ({
@@ -39,7 +70,7 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     }));
 
   const handleUserSelect = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
+    const user = ConversationIDs.find((u) => u === userId);
     if (user) {
       setSelectedUserId(userId);
       setSelectedUser(user);
@@ -50,13 +81,16 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     <div style={styles.container}>
       <ChatSidebar
         onUserSelect={handleUserSelect}
-        users={users}
+        users={ConversationIDs}
         selectedUserId={selectedUserId}
         session={session}
       />
       <div style={styles.chatArea}>
         {selectedUser ? (
-          <Chat currentUserId={session.user.sub} selectedUser={selectedUser} />
+          <Chat
+            currentUserId={session.user.sub}
+            selectedUser={selectedUserId}
+          />
         ) : (
           <Welcome />
         )}

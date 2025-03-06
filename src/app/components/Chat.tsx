@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Message } from "./Message";
 import MessageComponent from "./Message";
+import axios from "axios";
 
 interface ChatProps {
   currentUserId: string;
-  selectedUser: {
-    id: string;
-    name: string;
-    picture: string;
-  };
+  selectedUser: string;
 }
 
 const styles = {
@@ -70,6 +67,15 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (selectedUser) {
+      axios
+        .get(`/api/message?GroupID=${selectedUser}`)
+        .then((response) => setMessages(response.data.sortedMessages))
+        .catch((error) => console.error("Error fetching messages", error));
+    }
+  }, [selectedUser]);
+
   const isNearBottom = () => {
     if (containerRef.current) {
       const container = containerRef.current;
@@ -87,26 +93,6 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
-  // Simulated initial messages for now
-  useEffect(() => {
-    // Here we put a database call
-    const initialMessages: Message[] = [
-      {
-        id: "1",
-        senderId: currentUserId,
-        content: "Hey there!",
-        timestamp: new Date(Date.now() - 100000),
-      },
-      {
-        id: "2",
-        senderId: selectedUser.id,
-        content: "Hi! How are you?",
-        timestamp: new Date(Date.now() - 50000),
-      },
-    ];
-    setMessages(initialMessages);
-  }, [currentUserId, selectedUser.id]);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -131,7 +117,7 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.headerText}>Chat with {selectedUser.name}</h2>
+        <h2 style={styles.headerText}>Chat with {selectedUser}</h2>
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
@@ -141,12 +127,10 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
             message={message}
             isOwnMessage={message.senderId === currentUserId}
             senderName={
-              message.senderId === currentUserId ? "You" : selectedUser.name
+              message.senderId === currentUserId ? "You" : selectedUser
             }
             senderPicture={
-              message.senderId === currentUserId
-                ? undefined
-                : selectedUser.picture
+              message.senderId === currentUserId ? undefined : selectedUser
             }
           />
         ))}
