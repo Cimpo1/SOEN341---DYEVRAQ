@@ -62,7 +62,7 @@ const styles = {
 };
 
 const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,10 +71,13 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
     if (selectedUser) {
       axios
         .get(`/api/message?GroupID=${selectedUser}`)
-        .then((response) => setMessages(response.data.sortedMessages))
+        .then((response) => {
+          setMessages(response.data.sortedMessages);
+          console.log("Response data:", response.data);
+        })
         .catch((error) => console.error("Error fetching messages", error));
     }
-  }, [selectedUser]);
+  }, []);
 
   const isNearBottom = () => {
     if (containerRef.current) {
@@ -102,6 +105,33 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
         content: newMessage.trim(),
         timestamp: new Date(),
       };
+
+      const sendMessage = async (groupID, messageText, senderID) => {
+        try {
+          const response = await axios.post("/api/message", {
+            GroupID: groupID,
+            message: messageText,
+            sender: senderID,
+          });
+
+          console.log("Message sent successfully:", response.data);
+          return response.data;
+        } catch (error) {
+          console.error("Error sending message:", error);
+          throw error;
+        }
+      };
+
+      sendMessage(selectedUser, newMsg.content, currentUserId)
+        .then((data) => {
+          // Handle successful message sending
+          console.log("Message status:", data.success);
+        })
+        .catch((error) => {
+          // Handle errors
+          console.error("Failed to send message:", error);
+        });
+
       setMessages([...messages, newMsg]);
       setNewMessage("");
     }
@@ -121,17 +151,14 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <MessageComponent
-            key={message.id}
-            message={message}
-            isOwnMessage={message.senderId === currentUserId}
-            senderName={
-              message.senderId === currentUserId ? "You" : selectedUser
-            }
-            senderPicture={
-              message.senderId === currentUserId ? undefined : selectedUser
-            }
+            key={index}
+            message={message.message}
+            isOwnMessage={message.sender === currentUserId}
+            senderName={message.sender === currentUserId ? "You" : "Not You"}
+            senderPicture={message.message}
+            time={message.time}
           />
         ))}
         <div ref={messagesEndRef} />

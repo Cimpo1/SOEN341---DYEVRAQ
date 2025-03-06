@@ -9,10 +9,11 @@ export interface Message {
 }
 
 interface MessageProps {
-  message: Message;
+  message: string;
   isOwnMessage: boolean;
   senderName: string;
   senderPicture?: string;
+  time: Date;
 }
 
 const styles = {
@@ -78,6 +79,7 @@ const Message: React.FC<MessageProps> = ({
   isOwnMessage,
   senderName,
   senderPicture,
+  time,
 }) => {
   return (
     <div
@@ -99,9 +101,10 @@ const Message: React.FC<MessageProps> = ({
             ...(isOwnMessage ? styles.ownBubble : styles.otherBubble),
           }}
         >
-          {message.content}
+          {/* MESSAGE CONTENT */}
+          {message}
           <span style={styles.timestamp}>
-            {new Date(message.timestamp).toLocaleTimeString([], {
+            {new Date(time).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             })}
