@@ -28,12 +28,8 @@ const styles = {
 };
 
 const HomeContent: React.FC<{ session: any }> = ({ session }) => {
-  const [selectedConversationId, setSelectedConversationId] = useState<
-    string | null
-  >(null);
-  const [selectedConversation, setSelectedConversation] = useState<User | null>(
-    null
-  );
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<User | null>(null);
 
   const loggedInUserID = session.user.sub;
   const [conversations, setConversations] = useState([]);
@@ -62,8 +58,10 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     }
   }, [loggedInUserID]); // Fetch when user is logged in
 
-  const handleConversationSelect = (conversationId: string) => {
-    const conversation = ConversationIDs.find((c) => c === conversationId);
+
+
+  const handleUserSelect = (conversationId: string) => {
+    const conversation = ConversationIDs.find((u) => u === conversationId);
     if (conversation) {
       setSelectedConversationId(conversationId);
       setSelectedConversation(conversation);
@@ -73,10 +71,10 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   return (
     <div style={styles.container}>
       <ChatSidebar
-        onConversationSelect={handleConversationSelect}
+        onConversationSelect={handleUserSelect}
         conversations={ConversationIDs}
         selectedConversationId={selectedConversationId}
-      />
+            />
       <div style={styles.chatArea}>
         {selectedConversation ? (
           <Chat
