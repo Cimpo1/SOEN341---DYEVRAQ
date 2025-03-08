@@ -28,14 +28,15 @@ const styles = {
 };
 
 const HomeContent: React.FC<{ session: any }> = ({ session }) => {
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(null);
+  const [selectedConversation, setSelectedConversation] = useState<User | null>(
+    null
+  );
 
-  // Generate sample users for now which should eventually come from your backend :(
   const loggedInUserID = session.user.sub;
-  //const { user, error, isLoading } = useUser();
   const [conversations, setConversations] = useState([]);
-  // const [OtherUserIDs, setOtherUserIDs] = useState([]);
   const [ConversationIDs, setConversationIDs] = useState([]);
 
   useEffect(() => {
@@ -61,35 +62,26 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     }
   }, [loggedInUserID]); // Fetch when user is logged in
 
-  const users: User[] = Array(15)
-    .fill(null)
-    .map((_, index) => ({
-      id: `user-${index}`,
-      picture: session?.user?.picture || "",
-      name: session?.user?.name || "User",
-    }));
-
-  const handleUserSelect = (userId: string) => {
-    const user = ConversationIDs.find((u) => u === userId);
-    if (user) {
-      setSelectedUserId(userId);
-      setSelectedUser(user);
+  const handleConversationSelect = (conversationId: string) => {
+    const conversation = ConversationIDs.find((c) => c === conversationId);
+    if (conversation) {
+      setSelectedConversationId(conversationId);
+      setSelectedConversation(conversation);
     }
   };
 
   return (
     <div style={styles.container}>
       <ChatSidebar
-        onUserSelect={handleUserSelect}
-        users={ConversationIDs}
-        selectedUserId={selectedUserId}
-        session={session}
+        onConversationSelect={handleConversationSelect}
+        conversations={ConversationIDs}
+        selectedConversationId={selectedConversationId}
       />
       <div style={styles.chatArea}>
-        {selectedUser ? (
+        {selectedConversation ? (
           <Chat
-            currentUserId={session.user.sub}
-            selectedUser={selectedUserId}
+            currentUserId={loggedInUserID}
+            selectedConversation={selectedConversationId}
           />
         ) : (
           <Welcome />

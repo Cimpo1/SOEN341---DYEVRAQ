@@ -5,7 +5,7 @@ import axios from "axios";
 
 interface ChatProps {
   currentUserId: string;
-  selectedUser: string;
+  selectedConversation: string;
 }
 
 const styles = {
@@ -61,16 +61,16 @@ const styles = {
   },
 };
 
-const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
+const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (selectedUser) {
+    if (selectedConversation) {
       axios
-        .get(`/api/message?GroupID=${selectedUser}`)
+        .get(`/api/message?GroupID=${selectedConversation}`)
         .then((response) => {
           setMessages(response.data.sortedMessages);
           console.log("Response data:", response.data);
@@ -103,7 +103,6 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
         id: Date.now().toString(),
         senderId: currentUserId,
         content: newMessage.trim(),
-        timestamp: new Date(),
       };
 
       const sendMessage = async (groupID, messageText, senderID) => {
@@ -122,7 +121,7 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
         }
       };
 
-      sendMessage(selectedUser, newMsg.content, currentUserId)
+      sendMessage(selectedConversation, newMsg.content, currentUserId)
         .then((data) => {
           // Handle successful message sending
           console.log("Message status:", data.success);
@@ -147,17 +146,15 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.headerText}>Chat with {selectedUser}</h2>
+        <h2 style={styles.headerText}>Chat with {selectedConversation}</h2>
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
         {messages.map((message, index) => (
           <MessageComponent
             key={index}
-            message={message.message}
+            content={message.message}
             isOwnMessage={message.sender === currentUserId}
-            senderName={message.sender === currentUserId ? "You" : "Not You"}
-            senderPicture={message.message}
             time={message.time}
           />
         ))}

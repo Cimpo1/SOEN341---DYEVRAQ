@@ -11,17 +11,17 @@ interface User {
 }
 
 interface ChatSidebarProps {
-  onUserSelect?: (userId: string) => void;
+  onConversationSelect?: (conversationId: string) => void;
   session?: any;
-  users: string[];
-  selectedUserId: string | null;
+  conversations: string[];
+  selectedConversationId?: string | null;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
-  onUserSelect,
+  onConversationSelect,
   session,
-  users,
-  selectedUserId,
+  conversations,
+  selectedConversationId,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -37,12 +37,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     <aside className={styles.sidebar}>
       <div className={styles.sidebarContent}>
         <div className={styles.userList}>
-          {users.map((userId) => (
+          {conversations.map((conversationId,index) => (
             <UserSection
-              key={countId++}
-              user={userId}
-              isSelected={selectedUserId === userId}
-              onClick={() => onUserSelect?.(userId)}
+              key={index}
+              conversationId={conversationId}
+              isSelected={selectedConversationId === conversationId}
+              onClick={() => onConversationSelect?.(conversationId)}
             />
           ))}
         </div>
