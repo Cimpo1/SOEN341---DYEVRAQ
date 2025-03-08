@@ -150,12 +150,12 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
-        {messages.map((message, index) => (
+        {messages.map((msgObj, index) => (
           <MessageComponent
             key={index}
-            content={message.message}
-            isOwnMessage={message.sender === currentUserId}
-            time={message.time}
+            content={msgObj.message}
+            isOwnMessage={msgObj.sender === currentUserId}
+            time={msgObj.time}
           />
         ))}
         <div ref={messagesEndRef} />
