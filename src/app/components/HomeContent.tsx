@@ -58,8 +58,6 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     }
   }, [loggedInUserID]); // Fetch when user is logged in
 
-
-
   const handleUserSelect = (conversationId: string) => {
     const conversation = ConversationIDs.find((u) => u === conversationId);
     if (conversation) {

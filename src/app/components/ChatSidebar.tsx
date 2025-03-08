@@ -4,11 +4,8 @@ import React, { useState, useEffect } from "react";
 import styles from "./ChatSidebar.module.css";
 import UserSection from "./UserSection";
 
-interface User {
-  id: string;
-  picture: string;
-  name: string;
-}
+
+
 
 interface ChatSidebarProps {
   onConversationSelect?: (conversationId: string) => void;
