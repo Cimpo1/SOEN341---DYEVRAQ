@@ -110,7 +110,7 @@ const Chat: React.FC<ChatProps> = ({
     fetchMessages();
 
     // Set up interval
-    intervalId = setInterval(fetchMessages, 5000);
+    intervalId = setInterval(fetchMessages, 500);
 
     // Reset previous length ref when conversation changes
     previousMessageLengthRef.current = 0;
