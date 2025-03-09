@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Message } from "./Message";
 import MessageComponent from "./Message";
+import axios from "axios";
 
 interface ChatProps {
   currentUserId: string;
-  selectedUser: {
-    id: string;
-    name: string;
-    picture: string;
-  };
+  selectedConversation: string;
 }
 
 const styles = {
@@ -64,11 +61,23 @@ const styles = {
   },
 };
 
-const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedConversation) {
+      axios
+        .get(`/api/message?GroupID=${selectedConversation}`)
+        .then((response) => {
+          setMessages(response.data.sortedMessages);
+          console.log("Response data:", response.data);
+        })
+        .catch((error) => console.error("Error fetching messages", error));
+    }
+  }, []);
 
   const isNearBottom = () => {
     if (containerRef.current) {
@@ -88,34 +97,40 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
     }
   }, [messages]);
 
-  // Simulated initial messages for now
-  useEffect(() => {
-    // Here we put a database call
-    const initialMessages: Message[] = [
-      {
-        id: "1",
-        senderId: currentUserId,
-        content: "Hey there!",
-        timestamp: new Date(Date.now() - 100000),
-      },
-      {
-        id: "2",
-        senderId: selectedUser.id,
-        content: "Hi! How are you?",
-        timestamp: new Date(Date.now() - 50000),
-      },
-    ];
-    setMessages(initialMessages);
-  }, [currentUserId, selectedUser.id]);
-
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       const newMsg: Message = {
         id: Date.now().toString(),
         senderId: currentUserId,
         content: newMessage.trim(),
-        timestamp: new Date(),
       };
+
+      const sendMessage = async (groupID, messageText, senderID) => {
+        try {
+          const response = await axios.post("/api/message", {
+            GroupID: groupID,
+            message: messageText,
+            sender: senderID,
+          });
+
+          console.log("Message sent successfully:", response.data);
+          return response.data;
+        } catch (error) {
+          console.error("Error sending message:", error);
+          throw error;
+        }
+      };
+
+      sendMessage(selectedConversation, newMsg.content, currentUserId)
+        .then((data) => {
+          // Handle successful message sending
+          console.log("Message status:", data.success);
+        })
+        .catch((error) => {
+          // Handle errors
+          console.error("Failed to send message:", error);
+        });
+
       setMessages([...messages, newMsg]);
       setNewMessage("");
     }
@@ -131,23 +146,16 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedUser }) => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.headerText}>Chat with {selectedUser.name}</h2>
+        <h2 style={styles.headerText}>Chat with {selectedConversation}</h2>
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
-        {messages.map((message) => (
+        {messages.map((msgObj, index) => (
           <MessageComponent
-            key={message.id}
-            message={message}
-            isOwnMessage={message.senderId === currentUserId}
-            senderName={
-              message.senderId === currentUserId ? "You" : selectedUser.name
-            }
-            senderPicture={
-              message.senderId === currentUserId
-                ? undefined
-                : selectedUser.picture
-            }
+            key={index}
+            content={msgObj.message}
+            isOwnMessage={msgObj.sender === currentUserId}
+            time={msgObj.time}
           />
         ))}
         <div ref={messagesEndRef} />

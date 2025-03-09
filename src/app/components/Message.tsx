@@ -5,14 +5,12 @@ export interface Message {
   id: string;
   senderId: string;
   content: string;
-  timestamp: Date;
 }
 
 interface MessageProps {
-  message: Message;
+  content: string;
   isOwnMessage: boolean;
-  senderName: string;
-  senderPicture?: string;
+  time: Date;
 }
 
 const styles = {
@@ -74,10 +72,9 @@ const styles = {
 };
 
 const Message: React.FC<MessageProps> = ({
-  message,
+  content,
   isOwnMessage,
-  senderName,
-  senderPicture,
+  time,
 }) => {
   return (
     <div
@@ -88,20 +85,21 @@ const Message: React.FC<MessageProps> = ({
     >
       {!isOwnMessage && (
         <div style={styles.avatarContainer}>
-          <UserIcon imageUrl={senderPicture} name={senderName} size={32} />
+          <UserIcon imageUrl={""} name={""} size={32} />
         </div>
       )}
       <div style={styles.messageContent}>
-        {!isOwnMessage && <div style={styles.senderName}>{senderName}</div>}
+        {!isOwnMessage && <div style={styles.senderName}>{""}</div>}
         <div
           style={{
             ...styles.messageBubble,
             ...(isOwnMessage ? styles.ownBubble : styles.otherBubble),
           }}
         >
-          {message.content}
+          {/* MESSAGE CONTENT */}
+          {content}
           <span style={styles.timestamp}>
-            {new Date(message.timestamp).toLocaleTimeString([], {
+            {new Date(time).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             })}

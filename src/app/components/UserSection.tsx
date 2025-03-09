@@ -3,17 +3,13 @@ import styles from "./UserSection.module.css";
 import UserIcon from "./UserIcon";
 
 interface UserSectionProps {
-  user: {
-    id: string;
-    picture?: string;
-    name: string;
-  };
+  conversationId: string;
   isSelected: boolean;
   onClick: () => void;
 }
 
 const UserSection: React.FC<UserSectionProps> = ({
-  user,
+  conversationId,
   isSelected,
   onClick,
 }) => {
@@ -22,7 +18,8 @@ const UserSection: React.FC<UserSectionProps> = ({
       className={`${styles.section} ${isSelected ? styles.selected : ""}`}
       onClick={onClick}
     >
-      <UserIcon imageUrl={user.picture} name={user.name} />
+      {/* <UserIcon imageUrl={user.picture} name={user.name} /> */}
+      {conversationId}
     </div>
   );
 };

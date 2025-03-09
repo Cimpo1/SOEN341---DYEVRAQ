@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChatSidebar from "./ChatSidebar";
 import Welcome from "./Welcome";
 import Chat from "./Chat";
+import axios from "axios";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface User {
   id: string;
@@ -26,37 +28,57 @@ const styles = {
 };
 
 const HomeContent: React.FC<{ session: any }> = ({ session }) => {
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<User | null>(null);
 
-  // Generate sample users for now which should eventually come from your backend :(
-  const users: User[] = Array(15)
-    .fill(null)
-    .map((_, index) => ({
-      id: `user-${index}`,
-      picture: session?.user?.picture || "",
-      name: session?.user?.name || "User",
-    }));
+  const loggedInUserID = session.user.sub;
+  const [conversations, setConversations] = useState([]);
+  const [ConversationIDs, setConversationIDs] = useState([]);
 
-  const handleUserSelect = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
-    if (user) {
-      setSelectedUserId(userId);
-      setSelectedUser(user);
+  useEffect(() => {
+    if (loggedInUserID) {
+      axios
+        .get(`/api/directMessage?userID=${loggedInUserID}`)
+        .then((response) => {
+          console.log("Response data:", response.data);
+
+          // Extract all the GroupIDs into an array
+          const groupIDs = response.data.conversations.map(
+            (conversation) => conversation._id
+          );
+          console.log("Group IDs:", groupIDs);
+
+          // Still set the original conversations data for your component
+          setConversations(response.data.conversations);
+
+          // If you need to store the IDs in state as well
+          setConversationIDs(groupIDs);
+        })
+        .catch((error) => console.error("Error fetching conversations", error));
+    }
+  }, [loggedInUserID]); // Fetch when user is logged in
+
+  const handleUserSelect = (conversationId: string) => {
+    const conversation = ConversationIDs.find((u) => u === conversationId);
+    if (conversation) {
+      setSelectedConversationId(conversationId);
+      setSelectedConversation(conversation);
     }
   };
 
   return (
     <div style={styles.container}>
       <ChatSidebar
-        onUserSelect={handleUserSelect}
-        users={users}
-        selectedUserId={selectedUserId}
-        session={session}
-      />
+        onConversationSelect={handleUserSelect}
+        conversations={ConversationIDs}
+        selectedConversationId={selectedConversationId}
+            />
       <div style={styles.chatArea}>
-        {selectedUser ? (
-          <Chat currentUserId={session.user.sub} selectedUser={selectedUser} />
+        {selectedConversation ? (
+          <Chat
+            currentUserId={loggedInUserID}
+            selectedConversation={selectedConversationId}
+          />
         ) : (
           <Welcome />
         )}
