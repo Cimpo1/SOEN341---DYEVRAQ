@@ -16,16 +16,21 @@ interface MessageProps {
 const styles = {
   messageContainer: {
     display: "flex",
-    margin: "8px 16px",
+    marginTop: "8px",
+    marginBottom: "8px",
+    marginLeft: "16px",
+    marginRight: "16px",
     gap: "8px",
     maxWidth: "70%",
   },
   own: {
     marginLeft: "auto",
+    marginRight: "16px",
     flexDirection: "row-reverse" as const,
   },
   other: {
     marginRight: "auto",
+    marginLeft: "16px",
   },
   avatarContainer: {
     display: "flex",
@@ -44,7 +49,6 @@ const styles = {
   },
   messageBubble: {
     padding: "8px 12px",
-    borderRadius: "16px",
     position: "relative" as const,
     wordWrap: "break-word" as const,
     whiteSpace: "pre-wrap" as const,
@@ -55,12 +59,18 @@ const styles = {
   ownBubble: {
     backgroundColor: "#4F46E5",
     color: "white",
+    borderTopLeftRadius: "16px",
+    borderTopRightRadius: "16px",
+    borderBottomLeftRadius: "16px",
     borderBottomRightRadius: "4px",
   },
   otherBubble: {
     backgroundColor: "#3f3f3f",
     color: "white",
+    borderTopLeftRadius: "16px",
+    borderTopRightRadius: "16px",
     borderBottomLeftRadius: "4px",
+    borderBottomRightRadius: "16px",
   },
   timestamp: {
     fontSize: "0.7rem",
@@ -71,11 +81,7 @@ const styles = {
   },
 };
 
-const Message: React.FC<MessageProps> = ({
-  content,
-  isOwnMessage,
-  time,
-}) => {
+const Message: React.FC<MessageProps> = ({ content, isOwnMessage, time }) => {
   return (
     <div
       style={{

@@ -66,33 +66,79 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const previousMessageLengthRef = useRef(0); // Reference to track the last known message count
+  const [autoScroll, setAutoScroll] = useState(true);
 
   useEffect(() => {
-    if (selectedConversation) {
-      axios
-        .get(`/api/message?GroupID=${selectedConversation}`)
-        .then((response) => {
-          setMessages(response.data.sortedMessages);
-          console.log("Response data:", response.data);
-        })
-        .catch((error) => console.error("Error fetching messages", error));
-    }
-  }, []);
+    let intervalId = null;
 
-  const isNearBottom = () => {
+    const fetchMessages = () => {
+      if (selectedConversation) {
+        axios
+          .get(`/api/message?GroupID=${selectedConversation}`)
+          .then((response) => {
+            const newMessages = response.data.sortedMessages;
+
+            // Only update state if the message count has changed
+            if (newMessages.length !== previousMessageLengthRef.current) {
+              console.log(
+                "Messages updated. New count:",
+                newMessages.length,
+                "Previous count:",
+                previousMessageLengthRef.current
+              );
+              setMessages(newMessages);
+              previousMessageLengthRef.current = newMessages.length;
+            } else {
+              console.log(
+                "No new messages detected. Count still:",
+                newMessages.length
+              );
+            }
+          })
+          .catch((error) => console.error("Error fetching messages", error));
+      }
+    };
+
+    // First fetch: handle initial load or conversation change
+    fetchMessages();
+
+    // Set up interval
+    intervalId = setInterval(fetchMessages, 5000);
+
+    // Reset previous length ref when conversation changes
+    previousMessageLengthRef.current = 0;
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [selectedConversation]);
+
+  const handleScroll = () => {
     if (containerRef.current) {
-      const container = containerRef.current;
-      const threshold = 150;
-      return (
-        container.scrollHeight - container.scrollTop - container.clientHeight <
-        threshold
-      );
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      const isBottom = scrollHeight - scrollTop <= clientHeight + 150;
+
+      if (isBottom) {
+        setAutoScroll(true); // Enable auto-scroll if user is at the bottom
+      } else {
+        setAutoScroll(false); // Disable auto-scroll if user scrolls up
+      }
     }
-    return false;
   };
 
   useEffect(() => {
-    if (isNearBottom() && messagesEndRef.current) {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (autoScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
