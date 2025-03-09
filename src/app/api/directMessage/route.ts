@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
     // Finds conversations where the userID matches in the users array
     const results = await directMessage
       .find({
-        users: userID,
+        "users.id": userID,
       })
       .project({
         users: 1,
@@ -85,8 +85,10 @@ export async function GET(req: NextRequest) {
         _id: 1,
       })
       .toArray();
-
-    return NextResponse.json(
+      // users = get the user array
+      // _id = conversation id
+    
+      return NextResponse.json(
       {
         success: true,
         message: "Here are the conversations for the user",
