@@ -7,10 +7,16 @@ import Chat from "./Chat";
 import axios from "axios";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
-interface User {
+export interface Conversation {
+  _id: string;
+  users: User[];
+  isGroup: boolean;
+}
+
+export interface User {
   id: string;
-  picture: string;
-  name: string;
+  url: string;
+  username: string;
 }
 
 const styles = {
@@ -28,8 +34,12 @@ const styles = {
 };
 
 const HomeContent: React.FC<{ session: any }> = ({ session }) => {
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-  const [selectedConversation, setSelectedConversation] = useState<User | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(null);
+  const [selectedConversation, setSelectedConversation] = useState<User | null>(
+    null
+  );
 
   const loggedInUserID = session.user.sub;
   const [conversations, setConversations] = useState([]);
@@ -42,16 +52,28 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
         .then((response) => {
           console.log("Response data:", response.data);
 
+          // Process conversations to exclude the self-user from each user array
+          const processedConversations = response.data.conversations.map(
+            (conversation) => {
+              return {
+                ...conversation,
+                users: conversation.users.filter(
+                  (user) => user.id !== loggedInUserID
+                ),
+              };
+            }
+          );
+
+          console.log("Processed Conversation Data:", processedConversations);
+
           // Extract all the GroupIDs into an array
-          const groupIDs = response.data.conversations.map(
+          const groupIDs = processedConversations.map(
             (conversation) => conversation._id
           );
+
           console.log("Group IDs:", groupIDs);
 
-          // Still set the original conversations data for your component
-          setConversations(response.data.conversations);
-
-          // If you need to store the IDs in state as well
+          setConversations(processedConversations);
           setConversationIDs(groupIDs);
         })
         .catch((error) => console.error("Error fetching conversations", error));
@@ -70,13 +92,16 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     <div style={styles.container}>
       <ChatSidebar
         onConversationSelect={handleUserSelect}
-        conversations={ConversationIDs}
+        conversations={conversations}
         selectedConversationId={selectedConversationId}
-            />
+      />
       <div style={styles.chatArea}>
         {selectedConversation ? (
           <Chat
             currentUserId={loggedInUserID}
+            conversation={conversations.find(
+              (conv) => conv._id === selectedConversationId
+            )}
             selectedConversation={selectedConversationId}
           />
         ) : (

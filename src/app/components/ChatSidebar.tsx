@@ -3,14 +3,12 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ChatSidebar.module.css";
 import UserSection from "./UserSection";
-
-
-
+import { Conversation } from "./HomeContent";
 
 interface ChatSidebarProps {
   onConversationSelect?: (conversationId: string) => void;
   session?: any;
-  conversations: string[];
+  conversations: Conversation[];
   selectedConversationId?: string | null;
 }
 
@@ -34,12 +32,13 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     <aside className={styles.sidebar}>
       <div className={styles.sidebarContent}>
         <div className={styles.userList}>
-          {conversations.map((conversationId,index) => (
+          {conversations.map((conversation, index) => (
             <UserSection
               key={index}
-              conversationId={conversationId}
-              isSelected={selectedConversationId === conversationId}
-              onClick={() => onConversationSelect?.(conversationId)}
+              conversationId={conversation._id}
+              users={conversation.users}
+              isSelected={selectedConversationId === conversation._id}
+              onClick={() => onConversationSelect?.(conversation._id)}
             />
           ))}
         </div>

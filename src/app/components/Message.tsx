@@ -1,5 +1,6 @@
 import React from "react";
 import UserIcon from "./UserIcon";
+import { User } from "./HomeContent";
 
 export interface Message {
   id: string;
@@ -9,6 +10,8 @@ export interface Message {
 
 interface MessageProps {
   content: string;
+  users: User[];
+  senderId: string;
   isOwnMessage: boolean;
   time: Date;
 }
@@ -81,7 +84,15 @@ const styles = {
   },
 };
 
-const Message: React.FC<MessageProps> = ({ content, isOwnMessage, time }) => {
+const Message: React.FC<MessageProps> = ({
+  content,
+  users,
+  senderId,
+  isOwnMessage,
+  time,
+}) => {
+  const senderUser = users.find((user) => user.id === senderId);
+
   return (
     <div
       style={{
@@ -91,11 +102,19 @@ const Message: React.FC<MessageProps> = ({ content, isOwnMessage, time }) => {
     >
       {!isOwnMessage && (
         <div style={styles.avatarContainer}>
-          <UserIcon imageUrl={""} name={""} size={32} />
+          <UserIcon
+            imageUrl={senderUser ? senderUser.url : ""}
+            name={senderUser ? senderUser.username : "Not found"}
+            size={32}
+          />
         </div>
       )}
       <div style={styles.messageContent}>
-        {!isOwnMessage && <div style={styles.senderName}>{""}</div>}
+        {!isOwnMessage && (
+          <div style={styles.senderName}>
+            {senderUser ? senderUser.username : "Not found"}
+          </div>
+        )}
         <div
           style={{
             ...styles.messageBubble,

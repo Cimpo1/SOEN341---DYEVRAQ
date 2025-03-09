@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Message } from "./Message";
 import MessageComponent from "./Message";
 import axios from "axios";
+import { Conversation } from "./HomeContent";
 
 interface ChatProps {
   currentUserId: string;
+  conversation: Conversation;
   selectedConversation: string;
 }
 
@@ -61,7 +63,11 @@ const styles = {
   },
 };
 
-const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
+const Chat: React.FC<ChatProps> = ({
+  currentUserId,
+  conversation,
+  selectedConversation,
+}) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -192,7 +198,9 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.headerText}>Chat with {selectedConversation}</h2>
+        <h2 style={styles.headerText}>
+          Chat with {conversation.users.map((user) => user.username).join(", ")}
+        </h2>
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
@@ -200,6 +208,8 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
           <MessageComponent
             key={index}
             content={msgObj.message}
+            users={conversation.users}
+            senderId={msgObj.sender}
             isOwnMessage={msgObj.sender === currentUserId}
             time={msgObj.time}
           />
