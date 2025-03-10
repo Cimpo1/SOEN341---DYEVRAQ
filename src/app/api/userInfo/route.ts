@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
 
     // Prepare the update object
     const updateFields: any = {
+      UserID: UserID,
       Email: Email,
       UserName: UserName,
       PictureURL: PictureURL,
@@ -20,9 +21,8 @@ export async function POST(req: NextRequest) {
       updateFields.Nickname = Nickname;
     }
 
-    // Add user information to userid
     const result = await userInfo.updateOne(
-      { _id: new ObjectId(UserID) },
+      { UserID: UserID }, 
       {
         $set: updateFields,
       },
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     const client = await clientPromise;
     const userInfo = await client.db("DYEVRAQ-DB").collection("userInfo");
 
-    const user = await userInfo.findOne({ _id: new ObjectId(UserID) });
+    const user = await userInfo.findOne({ UserID: UserID });
 
     if (!user) {
       return NextResponse.json(
@@ -77,3 +77,4 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
