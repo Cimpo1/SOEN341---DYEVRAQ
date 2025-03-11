@@ -4,11 +4,40 @@ import Footer from "./components/Footer";
 import { styles } from "../styles/styles";
 import { auth0 } from "../../lib/auth0";
 import Image from "next/image";
+import axios from "axios";
 
 export default async function LandingPage() {
   const session = await auth0.getSession();
 
   if (session) {
+    console.log(session.user.picture);
+    const createUser = async (userId, email, userName, PictureURL,nickname) => {
+      try {
+        const response = await axios.post("http://localhost:3000/api/userInfo", {
+          UserID: userId,
+          Email: email,
+          UserName: userName,
+          PictureURL: PictureURL,
+          Nickname: nickname,
+        });
+
+        console.log("Data to Frontend successfull:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Error creating user:", error);
+        throw error;
+      }
+    };
+
+    createUser(session.user.sub, session.user.email, session.user.name,session.user.picture,"erert4t")
+      .then((data) => {
+        // Handle successful message sending
+        console.log("Message status:", data.success);
+      })
+      .catch((error) => {
+        // Handle errors
+        console.error("Failed to create User:", error);
+      });
     return (
       <main>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
