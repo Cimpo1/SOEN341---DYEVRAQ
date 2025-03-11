@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const result = await directMessage.updateOne(
       { _id: new ObjectId(GroupID) },
       {
-        $set: {
+        $push: {
           messages: {
             message: message,
             time: new Date(),
