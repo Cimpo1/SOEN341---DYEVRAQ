@@ -44,6 +44,7 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   const loggedInUserID = session.user.sub;
   const [conversations, setConversations] = useState([]);
   const [ConversationIDs, setConversationIDs] = useState([]);
+  const [AllUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
     if (loggedInUserID) {
@@ -80,6 +81,25 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     }
   }, [loggedInUserID]); // Fetch when user is logged in
 
+  useEffect(() => {
+    if (loggedInUserID) {
+      axios
+        .get(`/api/allUsers`)
+        .then((response) => {
+          console.log("Response data:", response.data);
+
+          const processedUsers = response.data.data.filter(
+            (user) => user.UserID !== loggedInUserID
+          );
+
+          console.log("All Users:", processedUsers);
+
+          setAllUsers(processedUsers);
+        })
+        .catch((error) => console.error("Error fetching users", error));
+    }
+  }, [loggedInUserID]); // Fetch when user is logged in
+
   const handleUserSelect = (conversationId: string) => {
     const conversation = ConversationIDs.find((u) => u === conversationId);
     if (conversation) {
@@ -92,8 +112,10 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     <div style={styles.container}>
       <ChatSidebar
         onConversationSelect={handleUserSelect}
+        session={session}
         conversations={conversations}
         selectedConversationId={selectedConversationId}
+        allUsers={AllUsers}
       />
       <div style={styles.chatArea}>
         {selectedConversation ? (

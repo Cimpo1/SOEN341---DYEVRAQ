@@ -4,12 +4,22 @@ import React, { useState, useEffect } from "react";
 import styles from "./ChatSidebar.module.css";
 import UserSection from "./UserSection";
 import { Conversation } from "./HomeContent";
+import CreateConversation from "./CreateConversation";
+
+export interface UserStoredInDB {
+  UserID: string;
+  Email: string;
+  UserName: string;
+  PictureURL: string;
+  Nickname: string;
+}
 
 interface ChatSidebarProps {
   onConversationSelect?: (conversationId: string) => void;
   session?: any;
   conversations: Conversation[];
   selectedConversationId?: string | null;
+  allUsers: UserStoredInDB[];
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
@@ -17,6 +27,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   session,
   conversations,
   selectedConversationId,
+  allUsers,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -32,6 +43,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     <aside className={styles.sidebar}>
       <div className={styles.sidebarContent}>
         <div className={styles.userList}>
+          <CreateConversation
+            allUsers={allUsers}
+            session={session}
+          ></CreateConversation>
           {conversations.map((conversation, index) => (
             <UserSection
               key={index}
