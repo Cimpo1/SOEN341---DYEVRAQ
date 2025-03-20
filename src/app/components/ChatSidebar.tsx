@@ -38,24 +38,26 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   if (!mounted) {
     return null;
   }
-  let countId = 0;
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarContent}>
         <div className={styles.userList}>
-          <CreateConversation
-            allUsers={allUsers}
-            session={session}
-          ></CreateConversation>
-          {conversations.map((conversation, index) => (
-            <UserSection
-              key={index}
-              conversationId={conversation._id}
-              users={conversation.users}
-              isSelected={selectedConversationId === conversation._id}
-              onClick={() => onConversationSelect?.(conversation._id)}
-            />
-          ))}
+          <CreateConversation allUsers={allUsers} session={session} />
+          <div className={styles.scrollableContent}>
+            {conversations.map((conversation, index) => (
+              <UserSection
+                key={index}
+                conversationId={conversation._id}
+                users={conversation.users}
+                isSelected={selectedConversationId === conversation._id}
+                onClick={() => onConversationSelect?.(conversation._id)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className={styles.groupList}>
+          {/* This section will be empty for now */}
         </div>
         <div className={styles.settings}></div>
       </div>
