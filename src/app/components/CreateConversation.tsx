@@ -7,11 +7,15 @@ import { User } from "./HomeContent";
 interface CreateConversationProps {
   allUsers: any;
   session: any;
+  buttonText?: string;
+  isGroup?: boolean;
 }
 
 const NewConversation: React.FC<CreateConversationProps> = ({
   allUsers,
   session,
+  buttonText = "New Conversation",
+  isGroup = false,
 }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -71,9 +75,9 @@ const NewConversation: React.FC<CreateConversationProps> = ({
   };
 
   return (
-    <div className="new-conversation">
+    <div className={`new-conversation ${isGroup ? "group-conversation" : ""}`}>
       <button className="new-convo-btn" onClick={() => setShowModal(true)}>
-        New Conversation
+        {buttonText}
       </button>
 
       {showModal && (

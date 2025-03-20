@@ -43,7 +43,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     <aside className={styles.sidebar}>
       <div className={styles.sidebarContent}>
         <div className={styles.userList}>
-          <CreateConversation allUsers={allUsers} session={session} />
+          <CreateConversation
+            allUsers={allUsers}
+            session={session}
+            key="direct-messages"
+          />
           <div className={styles.scrollableContent}>
             {conversations.map((conversation, index) => (
               <UserSection
@@ -57,7 +61,16 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           </div>
         </div>
         <div className={styles.groupList}>
-          {/* This section will be empty for now */}
+          <div className={styles.scrollableGroupContent}></div>
+          <div className={styles.groupCreateButton}>
+            <CreateConversation
+              allUsers={allUsers}
+              session={session}
+              key="group-messages"
+              buttonText="Create a group"
+              isGroup={true}
+            />
+          </div>
         </div>
         <div className={styles.settings}></div>
       </div>
