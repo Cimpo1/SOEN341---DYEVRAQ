@@ -72,7 +72,7 @@ const Chat: React.FC<ChatProps> = ({
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const previousMessageLengthRef = useRef(0); // Reference to track the last known message count
+  const previousMessageLengthRef = useRef(0);
   const [autoScroll, setAutoScroll] = useState(true);
 
   useEffect(() => {
@@ -83,37 +83,31 @@ const Chat: React.FC<ChatProps> = ({
         axios
           .get(`/api/message?GroupID=${selectedConversation}`)
           .then((response) => {
-            const newMessages = response.data.sortedMessages;
+            if (!response.data.success) {
+              setMessages([]);
+              previousMessageLengthRef.current = 0;
+              return;
+            }
 
-            // Only update state if the message count has changed
+            const newMessages = response.data.sortedMessages || [];
             if (newMessages.length !== previousMessageLengthRef.current) {
-              console.log(
-                "Messages updated. New count:",
-                newMessages.length,
-                "Previous count:",
-                previousMessageLengthRef.current
-              );
               setMessages(newMessages);
               previousMessageLengthRef.current = newMessages.length;
-            } else {
-              console.log(
-                "No new messages detected. Count still:",
-                newMessages.length
-              );
             }
           })
-          .catch((error) => console.error("Error fetching messages", error));
+          .catch((error) => {
+            console.error("Error fetching messages", error);
+            setMessages([]);
+            previousMessageLengthRef.current = 0;
+          });
       }
     };
 
-    // First fetch: handle initial load or conversation change
+    setMessages([]);
+    previousMessageLengthRef.current = 0;
     fetchMessages();
 
-    // Set up interval
     intervalId = setInterval(fetchMessages, 500);
-
-    // Reset previous length ref when conversation changes
-    previousMessageLengthRef.current = 0;
 
     return () => {
       if (intervalId) {
