@@ -27,23 +27,25 @@ const NewConversation: React.FC<CreateConversationProps> = ({
   };
 
   const handleUserSelect = (user) => {
-    setSelectedUsers((prev) => {
-      const isAlreadySelected = prev.some((u) => u.userID === user.userID);
-      // Add or remove the entire user object
-      return isAlreadySelected
-        ? prev.filter((u) => u.userID !== user.userID) // Remove user if already selected
-        : [...prev, user]; // Add user if not selected
-    });
+    if (isGroup) {
+      setSelectedUsers((prev) => {
+        const isAlreadySelected = prev.some((u) => u.UserID === user.UserID);
+        return isAlreadySelected
+          ? prev.filter((u) => u.UserID !== user.UserID)
+          : [...prev, user];
+      });
+    } else {
+      setSelectedUsers([user]);
+    }
   };
 
   const handleSubmit = () => {
     const createConversation = async (selectedUsers, loggedInUserObject) => {
       try {
-        // Map the users to match the expected backend structure
         const formattedUsers = selectedUsers.map((user) => ({
-          id: user.UserID, // Change UserID -> id
-          username: user.UserName, // Change UserName -> username
-          url: user.PictureURL, // Change PictureURL -> url
+          id: user.UserID,
+          username: user.UserName,
+          url: user.PictureURL,
         }));
 
         formattedUsers.push(loggedInUserObject);
@@ -51,7 +53,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
         const response = await axios.post(
           "http://localhost:3000/api/directMessage",
           {
-            users: formattedUsers, // Send correctly formatted users
+            users: formattedUsers,
           }
         );
 
@@ -62,7 +64,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
         throw error;
       }
     };
-    createConversation(selectedUsers, loggedInUserObject) // allUsers is already the correct array, no need for allUsers.data
+    createConversation(selectedUsers, loggedInUserObject)
       .then((data) => {
         console.log("Message status:", data.success);
       })
@@ -83,25 +85,36 @@ const NewConversation: React.FC<CreateConversationProps> = ({
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>Select Users</h3>
+            <h3>Select {isGroup ? "Users" : "a User"}</h3>
             <div className="modal-content">
               {allUsers.map((user) => (
                 <label key={user.UserID} className="user-option">
                   <input
-                    type="checkbox"
+                    type={isGroup ? "checkbox" : "radio"}
                     checked={selectedUsers.some(
                       (u) => u.UserID === user.UserID
                     )}
-                    onChange={() => handleUserSelect(user)} // Pass whole user object
+                    onChange={() => handleUserSelect(user)}
+                    name="user-selection"
                   />
                   <span>{user.UserName}</span>
                 </label>
               ))}
             </div>
-            <button className="submit-btn" onClick={handleSubmit}>
-              Start Conversation
+            <button
+              className="submit-btn"
+              onClick={handleSubmit}
+              disabled={selectedUsers.length === 0}
+            >
+              {isGroup ? "Create Group" : "Start Conversation"}
             </button>
-            <button className="close-btn" onClick={() => setShowModal(false)}>
+            <button
+              className="close-btn"
+              onClick={() => {
+                setShowModal(false);
+                setSelectedUsers([]);
+              }}
+            >
               Cancel
             </button>
           </div>
