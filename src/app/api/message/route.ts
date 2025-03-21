@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "../../../../lib/mongodb";
-import { ObjectId } from "mongodb";
+import { Double, ObjectId } from "mongodb";
 
 export async function POST(req: NextRequest) {
   const { GroupID, message, sender } = await req.json();
   try {
     const client = await clientPromise;
     interface Message {
+      id: number;
       message: string;
       time: Date;
       sender: string;
@@ -21,11 +22,27 @@ export async function POST(req: NextRequest) {
       .db("DYEVRAQ-DB")
       .collection<Group>("directMessage");
 
+    const group = await directMessage.findOne({ _id: new ObjectId(GroupID) });
+
+    if (!group) {
+      return NextResponse.json(
+        { success: false, message: "Group not found" },
+        { status: 404 }
+      );
+    }
+
+    // create message id using message array length
+    const newMessageId =
+      group.messages.length > 0
+        ? group.messages[group.messages.length - 1].id + 1
+        : 1;
+
     const result = await directMessage.updateOne(
       { _id: new ObjectId(GroupID) },
       {
         $push: {
           messages: {
+            id: newMessageId,
             message: message,
             time: new Date(),
             sender: sender,
