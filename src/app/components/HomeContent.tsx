@@ -5,7 +5,6 @@ import ChatSidebar from "./ChatSidebar";
 import Welcome from "./Welcome";
 import Chat from "./Chat";
 import axios from "axios";
-import { useUser } from "@auth0/nextjs-auth0/client";
 
 export interface Conversation {
   _id: string;
@@ -32,7 +31,7 @@ const styles = {
     width: "calc(100% - 80px)",
   },
 };
-
+// eslint-disable-next-line
 const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null

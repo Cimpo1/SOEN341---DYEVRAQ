@@ -6,9 +6,20 @@ export async function POST(req: NextRequest) {
   const { GroupID, message, sender } = await req.json();
   try {
     const client = await clientPromise;
+    interface Message {
+      message: string;
+      time: Date;
+      sender: string;
+    }
+
+    interface Group {
+      _id: ObjectId;
+      messages: Message[];
+    }
+
     const directMessage = await client
       .db("DYEVRAQ-DB")
-      .collection("directMessage");
+      .collection<Group>("directMessage");
 
     const result = await directMessage.updateOne(
       { _id: new ObjectId(GroupID) },
@@ -45,7 +56,7 @@ export async function GET(req: NextRequest) {
 
     const result = await directMessage.findOne(
       { _id: new ObjectId(GroupID) },
-      { messages: 1 }
+      { projection: { messages: 1 } }
     );
 
     const sortedMessages = result.messages.sort(

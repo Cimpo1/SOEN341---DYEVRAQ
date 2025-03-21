@@ -11,15 +11,24 @@ export default async function LandingPage() {
 
   if (session) {
     console.log(session.user.picture);
-    const createUser = async (userId, email, userName, PictureURL,nickname) => {
+    const createUser = async (
+      userId,
+      email,
+      userName,
+      PictureURL,
+      nickname
+    ) => {
       try {
-        const response = await axios.post("http://localhost:3000/api/userInfo", {
-          UserID: userId,
-          Email: email,
-          UserName: userName,
-          PictureURL: PictureURL,
-          Nickname: nickname,
-        });
+        const response = await axios.post(
+          "http://localhost:3000/api/userInfo",
+          {
+            UserID: userId,
+            Email: email,
+            UserName: userName,
+            PictureURL: PictureURL,
+            Nickname: nickname,
+          }
+        );
 
         console.log("Data to Frontend successfull:", response.data);
         return response.data;
@@ -29,7 +38,13 @@ export default async function LandingPage() {
       }
     };
 
-    createUser(session.user.sub, session.user.email, session.user.name,session.user.picture,"erert4t")
+    createUser(
+      session.user.sub,
+      session.user.email,
+      session.user.name,
+      session.user.picture,
+      "erert4t"
+    )
       .then((data) => {
         // Handle successful message sending
         console.log("Message status:", data.success);
@@ -91,7 +106,7 @@ export default async function LandingPage() {
           </div>
         </div>
         <div style={styles.heroImageContainer}>
-          <img src="/logo.png" alt="LOGO" style={styles.heroImage} />
+          <Image src="/logo.png" alt="LOGO" style={styles.heroImage} />
         </div>
       </header>
 

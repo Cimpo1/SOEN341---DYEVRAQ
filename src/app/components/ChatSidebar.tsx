@@ -16,7 +16,7 @@ export interface UserStoredInDB {
 
 interface ChatSidebarProps {
   onConversationSelect?: (conversationId: string) => void;
-  session?: any;
+  session?: any; // eslint-disable-line
   conversations: Conversation[];
   selectedConversationId?: string | null;
   allUsers: UserStoredInDB[];

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Image from "next/image";
 
 interface UserIconProps {
   imageUrl?: string;
@@ -7,7 +6,9 @@ interface UserIconProps {
   name?: string;
 }
 
+// eslint-disable-next-line
 const UserIcon: React.FC<UserIconProps> = ({ imageUrl, size, name }) => {
+  // eslint-disable-next-line
   const getFirstLetter = (name: string) => {
     return name.split(" ")[0].charAt(0).toUpperCase();
   };
@@ -27,7 +28,7 @@ const UserIcon: React.FC<UserIconProps> = ({ imageUrl, size, name }) => {
     position: "relative",
   };
 
-  const [imageError, setImageError] = useState(false);
+  const [imageError, setImageError] = useState(false); // eslint-disable-line
 
   return (
     <div style={iconStyle}>

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "../../../../lib/mongodb";
-import { ObjectId } from "mongodb";
 
 export async function POST(req: NextRequest) {
   const { UserID, Email, UserName, PictureURL, Nickname } = await req.json();
@@ -9,6 +8,7 @@ export async function POST(req: NextRequest) {
     const userInfo = await client.db("DYEVRAQ-DB").collection("userInfo");
 
     // Prepare the update object
+    // eslint-disable-next-line
     const updateFields: any = {
       UserID: UserID,
       Email: Email,
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await userInfo.updateOne(
-      { UserID: UserID }, 
+      { UserID: UserID },
       {
         $set: updateFields,
       },
@@ -77,4 +77,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

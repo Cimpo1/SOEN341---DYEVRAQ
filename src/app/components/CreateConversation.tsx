@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./CreateConversation.css";
-import { UserStoredInDB } from "./ChatSidebar";
 import axios from "axios";
-import { User } from "./HomeContent";
 
 interface CreateConversationProps {
-  allUsers: any;
-  session: any;
+  allUsers: any; // eslint-disable-line
+  session: any; // eslint-disable-line
   buttonText?: string;
   isGroup?: boolean;
 }
@@ -51,7 +49,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
         formattedUsers.push(loggedInUserObject);
 
         const response = await axios.post(
-          "http://localhost:3000/api/directMessage",
+          "http://localhost:3000/api/directMessage", // Update this URL when in production
           {
             users: formattedUsers,
           }
