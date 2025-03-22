@@ -235,19 +235,6 @@ const Chat: React.FC<ChatProps> = ({
         <h2 style={styles.headerText}>
           Chat with {conversation.users.map((user) => user.username).join(", ")}
         </h2>
-        {conversation?.isGroup && conversation?.channels && (
-          <select
-            style={styles.channelSelect}
-            value={selectedChannelId || ""}
-            onChange={(e) => onChannelSelect?.(e.target.value)}
-          >
-            {conversation.channels.map((channel) => (
-              <option key={channel.id} value={channel.id}>
-                {channel.name}
-              </option>
-            ))}
-          </select>
-        )}
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import ChatSidebar from "./ChatSidebar";
 import Welcome from "./Welcome";
 import Chat from "./Chat";
+import ChannelSidebar from "./ChannelSidebar";
 import axios from "axios";
 
 export interface User {
@@ -203,6 +204,12 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
         selectedConversationId={selectedConversationId}
         allUsers={AllUsers}
         onConversationCreated={refreshConversations}
+      />
+      <ChannelSidebar
+        channels={selectedConversation?.channels}
+        selectedChannelId={selectedChannelId}
+        onChannelSelect={(channelId) => setSelectedChannelId(channelId)}
+        isVisible={selectedConversation?.isGroup ?? false}
       />
       <div style={styles.chatArea}>
         {selectedConversation ? (

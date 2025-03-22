@@ -34,9 +34,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onConversationCreated,
 }) => {
   const [mounted, setMounted] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<{
-    [key: string]: boolean;
-  }>({});
 
   useEffect(() => {
     setMounted(true);
@@ -46,22 +43,10 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     return null;
   }
 
-  const toggleGroupExpand = (groupId: string) => {
-    setExpandedGroups((prev) => ({
-      ...prev,
-      [groupId]: !prev[groupId],
-    }));
-  };
-
   const handleGroupClick = (conversation: Conversation) => {
     if (conversation.channels && conversation.channels.length > 0) {
-      toggleGroupExpand(conversation._id);
       onConversationSelect?.(conversation._id, conversation.channels[0].id);
     }
-  };
-
-  const handleChannelClick = (conversationId: string, channelId: string) => {
-    onConversationSelect?.(conversationId, channelId);
   };
 
   return (
@@ -100,25 +85,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   isSelected={selectedConversationId === conversation._id}
                   onClick={() => handleGroupClick(conversation)}
                 />
-                {expandedGroups[conversation._id] && conversation.channels && (
-                  <div className={styles.channelList}>
-                    {conversation.channels.map((channel) => (
-                      <div
-                        key={channel.id}
-                        className={`${styles.channelItem} ${
-                          selectedConversationId === conversation._id
-                            ? styles.channelSelected
-                            : ""
-                        }`}
-                        onClick={() =>
-                          handleChannelClick(conversation._id, channel.id)
-                        }
-                      >
-                        # {channel.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </div>
