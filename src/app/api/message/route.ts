@@ -196,3 +196,68 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const groupId = searchParams.get("groupId");
+  const channelId = searchParams.get("channelId");
+  const messageId = searchParams.get("messageId");
+  const requesterId = searchParams.get("requesterId");
+
+  if (!groupId || !channelId || !messageId || !requesterId) {
+    return NextResponse.json(
+      { success: false, message: "Missing required parameters" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const client = await clientPromise;
+    const group = await client.db("DYEVRAQ-DB").collection("group");
+
+    // First, check if requester is an admin
+    const groupDoc = await group.findOne({
+      _id: new ObjectId(groupId),
+      "admins.id": requesterId
+    });
+
+    if (!groupDoc) {
+      return NextResponse.json(
+        { success: false, message: "Not authorized to delete messages" },
+        { status: 403 }
+      );
+    }
+
+    // Delete the message using $pull operator
+    const result = await group.updateOne(
+      { 
+        _id: new ObjectId(groupId),
+        "channels.id": channelId
+      },
+      {
+        $pull: {
+          "channels.$.messages": {
+            id: parseInt(messageId)
+          }
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "Message not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: true, message: "Message deleted successfully" },
+      { status: 200 }
+    );
+  } catch (e) {
+    return NextResponse.json(
+      { success: false, message: e.message },
+      { status: 500 }
+    );
+  }
+}

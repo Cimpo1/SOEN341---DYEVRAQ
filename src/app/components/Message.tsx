@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import UserIcon from "./UserIcon";
 import { User } from "./HomeContent";
 
@@ -14,73 +14,91 @@ interface MessageProps {
   senderId: string;
   isOwnMessage: boolean;
   time: Date;
+  isAdmin?: boolean;
+  onDelete?: () => void;
+  messageId: number;
 }
 
 const styles = {
   messageContainer: {
     display: "flex",
-    marginTop: "8px",
-    marginBottom: "8px",
-    marginLeft: "16px",
-    marginRight: "16px",
-    gap: "8px",
-    maxWidth: "70%",
+    marginBottom: "16px",
+    position: "relative" as const,
   },
   own: {
-    marginLeft: "auto",
-    marginRight: "16px",
     flexDirection: "row-reverse" as const,
   },
   other: {
-    marginRight: "auto",
-    marginLeft: "16px",
+    flexDirection: "row" as const,
   },
   avatarContainer: {
-    display: "flex",
-    alignSelf: "flex-end",
+    marginRight: "8px",
   },
   messageContent: {
-    display: "flex",
-    flexDirection: "column" as const,
-    maxWidth: "100%",
+    maxWidth: "70%",
   },
   senderName: {
-    fontSize: "0.8rem",
+    fontSize: "0.9rem",
     color: "#9ca3af",
-    marginBottom: "2px",
-    marginLeft: "8px",
+    marginBottom: "4px",
   },
   messageBubble: {
     padding: "8px 12px",
     position: "relative" as const,
-    wordWrap: "break-word" as const,
-    whiteSpace: "pre-wrap" as const,
-    minWidth: "80px",
-    maxWidth: "500px",
-    overflowWrap: "break-word" as const,
+    borderTopLeftRadius: "12px",
+    borderTopRightRadius: "12px",
+    borderBottomLeftRadius: "12px",
+    borderBottomRightRadius: "12px",
   },
   ownBubble: {
     backgroundColor: "#4F46E5",
     color: "white",
-    borderTopLeftRadius: "16px",
-    borderTopRightRadius: "16px",
-    borderBottomLeftRadius: "16px",
-    borderBottomRightRadius: "4px",
+    marginLeft: "auto",
+    borderTopRightRadius: "4px",
   },
   otherBubble: {
     backgroundColor: "#3f3f3f",
     color: "white",
-    borderTopLeftRadius: "16px",
-    borderTopRightRadius: "16px",
-    borderBottomLeftRadius: "4px",
-    borderBottomRightRadius: "16px",
+    borderTopLeftRadius: "4px",
   },
   timestamp: {
     fontSize: "0.7rem",
     color: "rgba(255, 255, 255, 0.7)",
     marginLeft: "8px",
-    display: "inline-block",
     verticalAlign: "bottom",
+  },
+  deleteButton: {
+    position: "absolute" as const,
+    top: "-10px",
+    right: isOwnMessage => isOwnMessage ? "auto" : "-10px",
+    left: isOwnMessage => isOwnMessage ? "-10px" : "auto",
+    backgroundColor: "#dc2626",
+    color: "white",
+    border: "none",
+    borderTopLeftRadius: "50%",
+    borderTopRightRadius: "50%",
+    borderBottomLeftRadius: "50%",
+    borderBottomRightRadius: "50%",
+    width: "20px",
+    height: "20px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    opacity: 0,
+    transition: "opacity 0.2s ease",
+    fontSize: "14px",
+    padding: 0,
+    "&:hover": {
+      backgroundColor: "#ef4444",
+    },
+  },
+  messageHover: {
+    "&:hover": {
+      "& $deleteButton": {
+        opacity: 1,
+      },
+    },
   },
 };
 
@@ -90,7 +108,11 @@ const Message: React.FC<MessageProps> = ({
   senderId,
   isOwnMessage,
   time,
+  isAdmin,
+  onDelete,
+  messageId,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const senderUser = users.find((user) => user.id === senderId);
 
   return (
@@ -99,6 +121,8 @@ const Message: React.FC<MessageProps> = ({
         ...styles.messageContainer,
         ...(isOwnMessage ? styles.own : styles.other),
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {!isOwnMessage && (
         <div style={styles.avatarContainer}>
@@ -121,7 +145,6 @@ const Message: React.FC<MessageProps> = ({
             ...(isOwnMessage ? styles.ownBubble : styles.otherBubble),
           }}
         >
-          {/* MESSAGE CONTENT */}
           {content}
           <span style={styles.timestamp}>
             {new Date(time).toLocaleTimeString([], {
@@ -129,6 +152,22 @@ const Message: React.FC<MessageProps> = ({
               minute: "2-digit",
             })}
           </span>
+          {isAdmin && isHovered && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.();
+              }}
+              style={{
+                ...styles.deleteButton,
+                ...(isOwnMessage ? { left: "-10px" } : { right: "-10px" }),
+                opacity: 1,
+              }}
+              title="Delete message"
+            >
+              ×
+            </button>
+          )}
         </div>
       </div>
     </div>

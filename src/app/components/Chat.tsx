@@ -101,6 +101,9 @@ const Chat: React.FC<ChatProps> = ({
   const previousMessageLengthRef = useRef(0);
   const [autoScroll, setAutoScroll] = useState(true);
 
+  const isAdmin =
+    conversation.admins?.some((admin) => admin.id === currentUserId) ?? false;
+
   useEffect(() => {
     let intervalId = null;
 
@@ -229,6 +232,23 @@ const Chat: React.FC<ChatProps> = ({
     }
   };
 
+  const handleDeleteMessage = async (messageId: number) => {
+    try {
+      const response = await axios.delete(
+        `/api/message?groupId=${selectedConversation}&channelId=${selectedChannelId}&messageId=${messageId}&requesterId=${currentUserId}`
+      );
+
+      if (response.data.success) {
+        // Update the messages list locally
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== messageId)
+        );
+      }
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -246,6 +266,9 @@ const Chat: React.FC<ChatProps> = ({
             senderId={msgObj.sender}
             isOwnMessage={msgObj.sender === currentUserId}
             time={msgObj.time}
+            isAdmin={isAdmin && conversation.isGroup}
+            onDelete={() => handleDeleteMessage(msgObj.id)}
+            messageId={msgObj.id}
           />
         ))}
         <div ref={messagesEndRef} />
