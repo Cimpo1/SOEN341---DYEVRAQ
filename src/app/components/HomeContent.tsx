@@ -6,16 +6,34 @@ import Welcome from "./Welcome";
 import Chat from "./Chat";
 import axios from "axios";
 
+export interface User {
+  id: string;
+  username: string;
+  url: string;
+}
+
+export interface Channel {
+  id: string;
+  name: string;
+  messages: Array<{
+    id: number;
+    message: string;
+    time: Date;
+    sender: string;
+  }>;
+}
+
 export interface Conversation {
   _id: string;
   users: User[];
   isGroup: boolean;
-}
-
-export interface User {
-  id: string;
-  url: string;
-  username: string;
+  channels?: Channel[];
+  messages?: Array<{
+    id: number;
+    message: string;
+    time: Date;
+    sender: string;
+  }>;
 }
 
 const styles = {
@@ -36,25 +54,25 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(null);
-  const [selectedConversation, setSelectedConversation] = useState<User | null>(
+  const [selectedChannelId, setSelectedChannelId] = useState<string | null>(
     null
   );
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
 
   const loggedInUserID = session.user.sub;
-  const [directMessages, setDirectMessages] = useState([]);
-  const [groupChats, setGroupChats] = useState([]);
-  const [ConversationIDs, setConversationIDs] = useState([]);
+  const [directMessages, setDirectMessages] = useState<Conversation[]>([]);
+  const [groupChats, setGroupChats] = useState<Conversation[]>([]);
+  const [ConversationIDs, setConversationIDs] = useState<string[]>([]);
   const [AllUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
     if (loggedInUserID) {
+      // Fetch direct messages
       axios
         .get(`/api/directMessage?userID=${loggedInUserID}`)
         .then((response) => {
-          console.log("Response data:", response.data);
-
-          // Process conversations to exclude the self-user from each user array
-          const processedConversations = response.data.conversations.map(
+          const processedDirectMessages = response.data.conversations.map(
             (conversation) => {
               return {
                 ...conversation,
@@ -65,30 +83,34 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
             }
           );
 
-          console.log("Processed Conversation Data:", processedConversations);
-
-          // Separate direct messages and group chats
-          const directMsgs = processedConversations.filter(
-            (conv) => !conv.isGroup
-          );
-          const groupMsgs = processedConversations.filter(
-            (conv) => conv.isGroup
-          );
-
-          // Extract all the GroupIDs into an array
-          const groupIDs = processedConversations.map(
-            (conversation) => conversation._id
-          );
-
-          console.log("Group IDs:", groupIDs);
-
-          setDirectMessages(directMsgs);
-          setGroupChats(groupMsgs);
-          setConversationIDs(groupIDs);
+          setDirectMessages(processedDirectMessages);
         })
-        .catch((error) => console.error("Error fetching conversations", error));
+        .catch((error) =>
+          console.error("Error fetching direct messages", error)
+        );
+
+      // Fetch group messages
+      axios
+        .get(`/api/groupMessage?userID=${loggedInUserID}`)
+        .then((response) => {
+          const processedGroupMessages = response.data.conversations.map(
+            (conversation) => {
+              return {
+                ...conversation,
+                users: conversation.users.filter(
+                  (user) => user.id !== loggedInUserID
+                ),
+              };
+            }
+          );
+
+          setGroupChats(processedGroupMessages);
+        })
+        .catch((error) =>
+          console.error("Error fetching group messages", error)
+        );
     }
-  }, [loggedInUserID]); // Fetch when user is logged in
+  }, [loggedInUserID]);
 
   useEffect(() => {
     if (loggedInUserID) {
@@ -109,20 +131,28 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     }
   }, [loggedInUserID]); // Fetch when user is logged in
 
-  const handleUserSelect = (conversationId: string) => {
-    const conversation = ConversationIDs.find((u) => u === conversationId);
+  const handleConversationSelect = (
+    conversationId: string,
+    channelId?: string
+  ) => {
+    const conversation = [...directMessages, ...groupChats].find(
+      (conv) => conv._id === conversationId
+    );
+
     if (conversation) {
       setSelectedConversationId(conversationId);
       setSelectedConversation(conversation);
+      setSelectedChannelId(channelId || null);
     }
   };
 
   const refreshConversations = () => {
     if (loggedInUserID) {
+      // Refresh direct messages
       axios
         .get(`/api/directMessage?userID=${loggedInUserID}`)
         .then((response) => {
-          const processedConversations = response.data.conversations.map(
+          const processedDirectMessages = response.data.conversations.map(
             (conversation) => {
               return {
                 ...conversation,
@@ -133,29 +163,39 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
             }
           );
 
-          const directMsgs = processedConversations.filter(
-            (conv) => !conv.isGroup
-          );
-          const groupMsgs = processedConversations.filter(
-            (conv) => conv.isGroup
-          );
-
-          const groupIDs = processedConversations.map(
-            (conversation) => conversation._id
-          );
-
-          setDirectMessages(directMsgs);
-          setGroupChats(groupMsgs);
-          setConversationIDs(groupIDs);
+          setDirectMessages(processedDirectMessages);
         })
-        .catch((error) => console.error("Error fetching conversations", error));
+        .catch((error) =>
+          console.error("Error fetching direct messages", error)
+        );
+
+      // Refresh group messages
+      axios
+        .get(`/api/groupMessage?userID=${loggedInUserID}`)
+        .then((response) => {
+          const processedGroupMessages = response.data.conversations.map(
+            (conversation) => {
+              return {
+                ...conversation,
+                users: conversation.users.filter(
+                  (user) => user.id !== loggedInUserID
+                ),
+              };
+            }
+          );
+
+          setGroupChats(processedGroupMessages);
+        })
+        .catch((error) =>
+          console.error("Error fetching group messages", error)
+        );
     }
   };
 
   return (
     <div style={styles.container}>
       <ChatSidebar
-        onConversationSelect={handleUserSelect}
+        onConversationSelect={handleConversationSelect}
         session={session}
         directMessages={directMessages}
         groupChats={groupChats}
@@ -167,10 +207,10 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
         {selectedConversation ? (
           <Chat
             currentUserId={loggedInUserID}
-            conversation={[...directMessages, ...groupChats].find(
-              (conv) => conv._id === selectedConversationId
-            )}
+            conversation={selectedConversation}
             selectedConversation={selectedConversationId}
+            selectedChannelId={selectedChannelId}
+            onChannelSelect={(channelId) => setSelectedChannelId(channelId)}
           />
         ) : (
           <Welcome />

@@ -61,13 +61,11 @@ const NewConversation: React.FC<CreateConversationProps> = ({
 
       formattedUsers.push(loggedInUserObject);
 
-      const response = await axios.post(
-        "http://localhost:3000/api/directMessage",
-        {
-          users: formattedUsers,
-          isGroup: isGroup,
-        }
-      );
+      const endpoint = isGroup ? "/api/groupMessage" : "/api/directMessage";
+
+      const response = await axios.post(endpoint, {
+        users: formattedUsers,
+      });
 
       console.log("Successfully Created Conversation", response.data);
       setShowModal(false);
@@ -79,7 +77,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
       }
     } catch (error) {
       if (error.response?.status === 400) {
-        showTemporaryError("A conversation already exists with this user");
+        showTemporaryError("A conversation already exists with these users");
       } else {
         showTemporaryError("Failed to create conversation. Please try again.");
       }

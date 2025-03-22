@@ -8,6 +8,19 @@ interface ChatProps {
   currentUserId: string;
   conversation: Conversation;
   selectedConversation: string;
+  selectedChannelId?: string | null;
+  onChannelSelect?: (value: string) => void;
+}
+
+interface Channel {
+  id: string;
+  name: string;
+  messages: Array<{
+    id: number;
+    message: string;
+    time: Date;
+    sender: string;
+  }>;
 }
 
 const styles = {
@@ -22,11 +35,22 @@ const styles = {
     padding: "16px",
     borderBottom: "1px solid #3f3f3f",
     backgroundColor: "#2c2c2c",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   headerText: {
     color: "#ffffff",
     fontSize: "1.1rem",
     fontWeight: "500",
+  },
+  channelSelect: {
+    padding: "8px",
+    backgroundColor: "#3f3f3f",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
   messagesContainer: {
     flex: 1,
@@ -67,6 +91,8 @@ const Chat: React.FC<ChatProps> = ({
   currentUserId,
   conversation,
   selectedConversation,
+  selectedChannelId,
+  onChannelSelect,
 }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -80,8 +106,12 @@ const Chat: React.FC<ChatProps> = ({
 
     const fetchMessages = () => {
       if (selectedConversation) {
+        const url = conversation?.isGroup
+          ? `/api/message?GroupID=${selectedConversation}&channelId=${selectedChannelId}`
+          : `/api/message?GroupID=${selectedConversation}`;
+
         axios
-          .get(`/api/message?GroupID=${selectedConversation}`)
+          .get(url)
           .then((response) => {
             if (!response.data.success) {
               setMessages([]);
@@ -114,7 +144,7 @@ const Chat: React.FC<ChatProps> = ({
         clearInterval(intervalId);
       }
     };
-  }, [selectedConversation]);
+  }, [selectedConversation, selectedChannelId]);
 
   const handleScroll = () => {
     if (containerRef.current) {
@@ -122,9 +152,9 @@ const Chat: React.FC<ChatProps> = ({
       const isBottom = scrollHeight - scrollTop <= clientHeight + 150;
 
       if (isBottom) {
-        setAutoScroll(true); // Enable auto-scroll if user is at the bottom
+        setAutoScroll(true);
       } else {
-        setAutoScroll(false); // Disable auto-scroll if user scrolls up
+        setAutoScroll(false);
       }
     }
   };
@@ -145,20 +175,32 @@ const Chat: React.FC<ChatProps> = ({
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      const newMsg: Message = {
+      const newMsg = {
         id: Date.now().toString(),
         senderId: currentUserId,
         content: newMessage.trim(),
       };
 
-      const sendMessage = async (groupID, messageText, senderID) => {
+      const sendMessage = async (
+        groupID: string,
+        messageText: string,
+        senderID: string
+      ) => {
         try {
-          const response = await axios.post("/api/message", {
-            GroupID: groupID,
-            message: messageText,
-            sender: senderID,
-          });
+          const payload = conversation?.isGroup
+            ? {
+                GroupID: groupID,
+                message: messageText,
+                sender: senderID,
+                channelId: selectedChannelId,
+              }
+            : {
+                GroupID: groupID,
+                message: messageText,
+                sender: senderID,
+              };
 
+          const response = await axios.post("/api/message", payload);
           console.log("Message sent successfully:", response.data);
           return response.data;
         } catch (error) {
@@ -169,11 +211,9 @@ const Chat: React.FC<ChatProps> = ({
 
       sendMessage(selectedConversation, newMsg.content, currentUserId)
         .then((data) => {
-          // Handle successful message sending
           console.log("Message status:", data.success);
         })
         .catch((error) => {
-          // Handle errors
           console.error("Failed to send message:", error);
         });
 
@@ -195,6 +235,19 @@ const Chat: React.FC<ChatProps> = ({
         <h2 style={styles.headerText}>
           Chat with {conversation.users.map((user) => user.username).join(", ")}
         </h2>
+        {conversation?.isGroup && conversation?.channels && (
+          <select
+            style={styles.channelSelect}
+            value={selectedChannelId || ""}
+            onChange={(e) => onChannelSelect?.(e.target.value)}
+          >
+            {conversation.channels.map((channel) => (
+              <option key={channel.id} value={channel.id}>
+                {channel.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
