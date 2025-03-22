@@ -26,6 +26,7 @@ export interface Channel {
 export interface Conversation {
   _id: string;
   users: User[];
+  admins: User[];
   isGroup: boolean;
   channels?: Channel[];
   messages?: Array<{

@@ -14,13 +14,27 @@ interface Message {
   sender: string;
 }
 
+interface User {
+  id: string;
+  username: string;
+  url: string;
+}
+
+interface GroupDocument {
+  users: User[];
+  admins: User[];
+  isGroup: boolean;
+  createdAt: Date;
+  channels: Channel[];
+}
+
 export async function POST(req: NextRequest) {
   const { users, channelName = "general" } = await req.json();
   try {
     const client = await clientPromise;
     const group = await client
       .db("DYEVRAQ-DB")
-      .collection("group");
+      .collection<GroupDocument>("group");
 
     // Check is input is an array of user objects and if there is more than 2 users
     if (
@@ -61,8 +75,13 @@ export async function POST(req: NextRequest) {
       messages: []
     };
 
+    // Set the creator (logged-in user) as the admin
+    // The creator is the last user in the array since frontend adds them last
+    const initialAdmin = users[users.length - 1];
+
     const newGroup = await group.insertOne({
       users: users,
+      admins: [initialAdmin], // Initialize with the creator as admin
       isGroup: true,
       createdAt: new Date(),
       channels: [initialChannel]  // Initialize with one default channel
@@ -92,7 +111,7 @@ export async function GET(req: NextRequest) {
     const client = await clientPromise;
     const group = await client
       .db("DYEVRAQ-DB")
-      .collection("group");
+      .collection<GroupDocument>("group");
 
     // Finds groups where the userID matches in the users array
     const results = await group
@@ -101,9 +120,10 @@ export async function GET(req: NextRequest) {
       })
       .project({
         users: 1,
+        admins: 1, // Now also returning admins information
         isGroup: 1,
         _id: 1,
-        channels: 1  // Now also returning channels information
+        channels: 1
       })
       .toArray();
     
