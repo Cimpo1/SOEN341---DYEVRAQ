@@ -7,24 +7,24 @@ export async function POST(req: NextRequest) {
 
     try {
         const client = await clientPromise;
-        const directMessage = await client
+        const groupMessage = await client
             .db("DYEVRAQ-DB")
-            .collection("groupmessage");
+            .collection("groupMessage");
 
 
-        const admin = await directMessage.findOne({
+        const admin = await groupMessage.findOne({
             id_: new ObjectId(groupID),
-            admins: new ObjectId(requestor)
+            "admins.id": new ObjectId(requestor)
         });
 
         if(!admin){
             return NextResponse.json(
-                { success: false, message: "not owner" },
+                { success: false, message: "not admin" },
                 { status: 500 }
             );
         }
 
-        const result = await directMessage.updateOne(
+        const result = await groupMessage.updateOne(
             { _id: new ObjectId(groupID) },
             {$push: {users: { newuser},},}
         );
@@ -45,25 +45,25 @@ export async function DELETE(req: NextRequest) {
 
     try {
         const client = await clientPromise;
-        const directMessage = await client
+        const groupMessage = await client
             .db("DYEVRAQ-DB")
-            .collection("directMessage");
+            .collection("groupMessage");
 
 
-        const owner = await directMessage.findOne(
-            {_id: new ObjectId(groupID)},
-            { "owner": 1 }
-        );
+        const admin = await groupMessage.findOne({
+            id_: new ObjectId(groupID),
+            "admins.id": new ObjectId(requestor)
+        });
 
-        if(owner!=requestor){
+        if(!admin){
             return NextResponse.json(
-                { success: false, message: "not owner" },
+                { success: false, message: "not admin" },
                 { status: 500 }
             );
         }
         const removeduserid = removeduser.id;
 
-        const result = await directMessage.updateOne(
+        const result = await groupMessage.updateOne(
             { _id: new ObjectId(groupID) },
             {$pull: {users: { removeduserid},},}
         );
@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
 
         const result = await directMessage.findOne(
             { _id: new ObjectId(GroupID) },
-            { users: 1, owner: 1}
+            { users: 1, admins: 1}
         );
 
 

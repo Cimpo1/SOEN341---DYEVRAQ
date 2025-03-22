@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
         const newGroupMessage = await groupMessage.insertOne({
             users: users,
-            admin: admins,
+            admins: admins,
             createdAt: new Date(),
             channels: [{
                 channelID: uuidv4(),
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
         // Finds conversations where the userID matches in the users array
         const results = await groupMessage
             .find({
-                "users.id": userID,
+                "users.id": userID
             })
             .project({
                 users: 1,

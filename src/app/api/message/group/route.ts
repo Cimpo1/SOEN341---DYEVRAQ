@@ -51,19 +51,19 @@ export async function GET(req: NextRequest) {
       { _id: new ObjectId(GroupID),
         "channels.channelID": ChannelID
       },
-      { "channels.$.messages": 1 }
+      { projection: {"channels.messages.$": 1} }
     );
 
-    const sortedMessages = result.messages.sort(
-      (a: { date: string }, b: { date: string }) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    // const sortedMessages = result.messages.sort(
+    //   (a: { date: string }, b: { date: string }) =>
+    //     new Date(a.date).getTime() - new Date(b.date).getTime()
+    // );
 
     return NextResponse.json(
       {
         success: true,
         message: "here is the list of messages",
-        sortedMessages: sortedMessages,
+        sortedMessages: result,
       },
       { status: 202 }
     );

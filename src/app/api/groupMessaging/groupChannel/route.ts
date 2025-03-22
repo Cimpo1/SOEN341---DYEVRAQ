@@ -4,7 +4,7 @@ import {ObjectId} from "mongodb";
 const { v4: uuidv4 } = require('uuid');
 
 export async function POST(req: NextRequest) {
-    const {groupID, channel_Name, requestor} = await req.json();
+    const {groupID, channelName, requestor} = await req.json();
     try {
         const client = await clientPromise;
         const groupMessage = await client
@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
             .collection("groupMessage");
 
         const admin = await groupMessage.findOne({
-            id_: new ObjectId(groupID),
-            admins: new ObjectId(requestor)
+            _id: new ObjectId(groupID),
+            "admins.id": requestor
         });
 
         if(!admin){
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         { $push: {
                 "channels": {
                     channelID: uuidv4(),
-                    channel_name: channel_Name,
+                    channelName: channelName,
                     messages: []
                 },
             }
@@ -63,28 +63,28 @@ export async function GET(req: NextRequest) {
             .collection("groupMessage");
 
         const user = await groupMessage.findOne({
-            id_: new ObjectId(groupID),
-            user: new ObjectId(userID)
+            _id: new ObjectId(groupID),
+            "users.id": userID
         });
 
         if(!user){
             return NextResponse.json(
-                { success: false, message: "not in the group" },
+                { success: false, message: "not a user", user: userID },
                 { status: 500 }
             );
         }
 
-        groupMessage.findOne({
+        const result = await groupMessage.findOne({
                 _id: new ObjectId(groupID)},
             {
-                "channels": 1,
+                projection: { channels: 1, _id: 0 }
             });
 
         return NextResponse.json(
             {
                 success: true,
                 message: "Conversation created",
-
+                result: result
             },
             { status: 201 }
         );
