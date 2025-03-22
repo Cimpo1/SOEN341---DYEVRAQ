@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "../../../../lib/mongodb";
 
 export async function POST(req: NextRequest) {
-  const { users, owner } = await req.json();
+  const { users} = await req.json();
   try {
     const client = await clientPromise;
     const directMessage = await client
@@ -41,23 +41,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let newDirectMessage;
-    if(owner){
-        newDirectMessage = await directMessage.insertOne({
+
+    const newDirectMessage = await directMessage.insertOne({
         users: users,
-        isGroup: true,
-        owner: owner,
         createdAt: new Date(),
         messages: [],
     });
-    } else {
-        newDirectMessage = await directMessage.insertOne({
-        users: users,
-        isGroup: false,
-        createdAt: new Date(),
-        messages: [],
-      });
-    }
+
 
     return NextResponse.json(
       {
@@ -92,7 +82,6 @@ export async function GET(req: NextRequest) {
       })
       .project({
         users: 1,
-        isGroup: 1,
         _id: 1,
       })
       .toArray();

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import clientPromise from "../../../../lib/mongodb";
+import clientPromise from "../../../../../lib/mongodb";
 import {ObjectId} from "mongodb";
 
 export async function POST(req: NextRequest) {
@@ -9,15 +9,15 @@ export async function POST(req: NextRequest) {
         const client = await clientPromise;
         const directMessage = await client
             .db("DYEVRAQ-DB")
-            .collection("directMessage");
+            .collection("groupmessage");
 
 
-        const owner = await directMessage.findOne(
-            {_id: new ObjectId(groupID)},
-            { "owner": 1 }
-        );
+        const admin = await directMessage.findOne({
+            id_: new ObjectId(groupID),
+            admins: new ObjectId(requestor)
+        });
 
-        if(owner!=requestor){
+        if(!admin){
             return NextResponse.json(
                 { success: false, message: "not owner" },
                 { status: 500 }
