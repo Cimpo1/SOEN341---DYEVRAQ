@@ -106,7 +106,7 @@ export default async function LandingPage() {
           </div>
         </div>
         <div style={styles.heroImageContainer}>
-          <Image src="/logo.png" alt="LOGO" style={styles.heroImage} />
+          <img src="/logo.png" alt="LOGO" style={styles.heroImage} />
         </div>
       </header>
 
