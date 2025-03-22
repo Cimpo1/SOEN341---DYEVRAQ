@@ -17,7 +17,8 @@ export interface UserStoredInDB {
 interface ChatSidebarProps {
   onConversationSelect?: (conversationId: string) => void;
   session?: any; // eslint-disable-line
-  conversations: Conversation[];
+  directMessages: Conversation[];
+  groupChats: Conversation[];
   selectedConversationId?: string | null;
   allUsers: UserStoredInDB[];
 }
@@ -25,7 +26,8 @@ interface ChatSidebarProps {
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onConversationSelect,
   session,
-  conversations,
+  directMessages,
+  groupChats,
   selectedConversationId,
   allUsers,
 }) => {
@@ -49,7 +51,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             key="direct-messages"
           />
           <div className={styles.scrollableContent}>
-            {conversations.map((conversation, index) => (
+            {directMessages.map((conversation, index) => (
               <UserSection
                 key={index}
                 conversationId={conversation._id}
@@ -61,7 +63,17 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
           </div>
         </div>
         <div className={styles.groupList}>
-          <div className={styles.scrollableGroupContent}></div>
+          <div className={styles.scrollableGroupContent}>
+            {groupChats.map((conversation, index) => (
+              <UserSection
+                key={index}
+                conversationId={conversation._id}
+                users={conversation.users}
+                isSelected={selectedConversationId === conversation._id}
+                onClick={() => onConversationSelect?.(conversation._id)}
+              />
+            ))}
+          </div>
           <div className={styles.groupCreateButton}>
             <CreateConversation
               allUsers={allUsers}

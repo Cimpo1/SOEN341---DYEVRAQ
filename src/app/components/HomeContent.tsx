@@ -41,7 +41,8 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   );
 
   const loggedInUserID = session.user.sub;
-  const [conversations, setConversations] = useState([]);
+  const [directMessages, setDirectMessages] = useState([]);
+  const [groupChats, setGroupChats] = useState([]);
   const [ConversationIDs, setConversationIDs] = useState([]);
   const [AllUsers, setAllUsers] = useState([]);
 
@@ -66,6 +67,14 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
 
           console.log("Processed Conversation Data:", processedConversations);
 
+          // Separate direct messages and group chats
+          const directMsgs = processedConversations.filter(
+            (conv) => !conv.isGroup
+          );
+          const groupMsgs = processedConversations.filter(
+            (conv) => conv.isGroup
+          );
+
           // Extract all the GroupIDs into an array
           const groupIDs = processedConversations.map(
             (conversation) => conversation._id
@@ -73,7 +82,8 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
 
           console.log("Group IDs:", groupIDs);
 
-          setConversations(processedConversations);
+          setDirectMessages(directMsgs);
+          setGroupChats(groupMsgs);
           setConversationIDs(groupIDs);
         })
         .catch((error) => console.error("Error fetching conversations", error));
@@ -112,7 +122,8 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
       <ChatSidebar
         onConversationSelect={handleUserSelect}
         session={session}
-        conversations={conversations}
+        directMessages={directMessages}
+        groupChats={groupChats}
         selectedConversationId={selectedConversationId}
         allUsers={AllUsers}
       />
@@ -120,7 +131,7 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
         {selectedConversation ? (
           <Chat
             currentUserId={loggedInUserID}
-            conversation={conversations.find(
+            conversation={[...directMessages, ...groupChats].find(
               (conv) => conv._id === selectedConversationId
             )}
             selectedConversation={selectedConversationId}

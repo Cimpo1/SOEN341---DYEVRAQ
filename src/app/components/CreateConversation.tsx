@@ -17,6 +17,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
 }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const loggedInUserObject = {
     id: session.user.sub,
@@ -35,49 +36,54 @@ const NewConversation: React.FC<CreateConversationProps> = ({
     } else {
       setSelectedUsers([user]);
     }
+    setErrorMessage(null);
   };
 
-  const handleSubmit = () => {
-    const createConversation = async (selectedUsers, loggedInUserObject) => {
-      try {
-        const formattedUsers = selectedUsers.map((user) => ({
-          id: user.UserID,
-          username: user.UserName,
-          url: user.PictureURL,
-        }));
+  const showTemporaryError = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => setErrorMessage(null), 3000);
+  };
 
-        formattedUsers.push(loggedInUserObject);
+  const handleSubmit = async () => {
+    if (isGroup && selectedUsers.length < 2) {
+      showTemporaryError("You need at least 2 users to create a group");
+      return;
+    }
 
-        const response = await axios.post(
-          "http://localhost:3000/api/directMessage", // Update this URL when in production
-          {
-            users: formattedUsers,
-          }
-        );
+    try {
+      const formattedUsers = selectedUsers.map((user) => ({
+        id: user.UserID,
+        username: user.UserName,
+        url: user.PictureURL,
+      }));
 
-        console.log("Successfully Created Conversation", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("Error creating conversation:", error);
-        throw error;
+      formattedUsers.push(loggedInUserObject);
+
+      const response = await axios.post(
+        "http://localhost:3000/api/directMessage",
+        {
+          users: formattedUsers,
+          isGroup: isGroup,
+        }
+      );
+
+      console.log("Successfully Created Conversation", response.data);
+      setShowModal(false);
+      setSelectedUsers([]);
+      setErrorMessage(null);
+    } catch (error) {
+      if (error.response?.status === 400) {
+        showTemporaryError("A conversation already exists with this user");
+      } else {
+        showTemporaryError("Failed to create conversation. Please try again.");
       }
-    };
-    createConversation(selectedUsers, loggedInUserObject)
-      .then((data) => {
-        console.log("Message status:", data.success);
-      })
-      .catch((error) => {
-        console.error("Failed to create conversation:", error);
-      });
-
-    setShowModal(false);
-    setSelectedUsers([]);
+    }
   };
 
   return (
     <div className={`new-conversation ${isGroup ? "group-conversation" : ""}`}>
       <button className="new-convo-btn" onClick={() => setShowModal(true)}>
-        {buttonText}
+        {buttonText === "New Conversation" ? "New\nConversation" : buttonText}
       </button>
 
       {showModal && (
@@ -99,6 +105,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
                 </label>
               ))}
             </div>
+            {errorMessage && <div className="error-popup">{errorMessage}</div>}
             <button
               className="submit-btn"
               onClick={handleSubmit}
@@ -111,6 +118,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
               onClick={() => {
                 setShowModal(false);
                 setSelectedUsers([]);
+                setErrorMessage(null);
               }}
             >
               Cancel
