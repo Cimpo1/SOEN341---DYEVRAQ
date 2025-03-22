@@ -70,15 +70,10 @@ const styles = {
   deleteButton: {
     position: "absolute" as const,
     top: "-10px",
-    right: isOwnMessage => isOwnMessage ? "auto" : "-10px",
-    left: isOwnMessage => isOwnMessage ? "-10px" : "auto",
     backgroundColor: "#dc2626",
     color: "white",
     border: "none",
-    borderTopLeftRadius: "50%",
-    borderTopRightRadius: "50%",
-    borderBottomLeftRadius: "50%",
-    borderBottomRightRadius: "50%",
+    borderRadius: "50%",
     width: "20px",
     height: "20px",
     display: "flex",
@@ -89,9 +84,6 @@ const styles = {
     transition: "opacity 0.2s ease",
     fontSize: "14px",
     padding: 0,
-    "&:hover": {
-      backgroundColor: "#ef4444",
-    },
   },
   messageHover: {
     "&:hover": {
@@ -160,7 +152,8 @@ const Message: React.FC<MessageProps> = ({
               }}
               style={{
                 ...styles.deleteButton,
-                ...(isOwnMessage ? { left: "-10px" } : { right: "-10px" }),
+                right: isOwnMessage ? "auto" : "-10px",
+                left: isOwnMessage ? "-10px" : "auto",
                 opacity: 1,
               }}
               title="Delete message"
