@@ -88,6 +88,10 @@
   transition: background-color 0.2s;
 }
 
+.user-option span {
+  transition: color 0.3s ease;
+}
+
 .user-option:hover {
   background-color: #3f3f3f;
 }

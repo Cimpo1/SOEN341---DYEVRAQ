@@ -29,7 +29,7 @@ interface GroupDocument {
 }
 
 export async function POST(req: NextRequest) {
-  const { users, channelName = "general" } = await req.json();
+  const { users, admins, channelName = "general" } = await req.json();
   try {
     const client = await clientPromise;
     const group = await client
@@ -75,13 +75,12 @@ export async function POST(req: NextRequest) {
       messages: []
     };
 
-    // Set the creator (logged-in user) as the admin
-    // The creator is the last user in the array since frontend adds them last
-    const initialAdmin = users[users.length - 1];
+    // Use provided admins array or default to creator as admin
+    const groupAdmins = admins || [users[users.length - 1]];
 
     const newGroup = await group.insertOne({
       users: users,
-      admins: [initialAdmin], // Initialize with the creator as admin
+      admins: groupAdmins,
       isGroup: true,
       createdAt: new Date(),
       channels: [initialChannel]  // Initialize with one default channel

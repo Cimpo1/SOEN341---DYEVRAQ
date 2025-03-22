@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./CreateConversation.css";
 import axios from "axios";
 
@@ -10,6 +10,12 @@ interface CreateConversationProps {
   onConversationCreated?: () => void;
 }
 
+interface HoverState {
+  userId: string;
+  startTime: number;
+  timer: NodeJS.Timeout | null;
+}
+
 const NewConversation: React.FC<CreateConversationProps> = ({
   allUsers,
   session,
@@ -18,8 +24,11 @@ const NewConversation: React.FC<CreateConversationProps> = ({
   onConversationCreated,
 }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedAdmins, setSelectedAdmins] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [hoverStates, setHoverStates] = useState<{ [key: string]: number }>({});
+  const hoverTimers = useRef<{ [key: string]: NodeJS.Timeout }>({});
 
   const loggedInUserObject = {
     id: session.user.sub,
@@ -31,14 +40,84 @@ const NewConversation: React.FC<CreateConversationProps> = ({
     if (isGroup) {
       setSelectedUsers((prev) => {
         const isAlreadySelected = prev.some((u) => u.UserID === user.UserID);
-        return isAlreadySelected
-          ? prev.filter((u) => u.UserID !== user.UserID)
-          : [...prev, user];
+        if (isAlreadySelected) {
+          // If removing a user, also remove them from admins if they were one
+          setSelectedAdmins((current) =>
+            current.filter((id) => id !== user.UserID)
+          );
+          return prev.filter((u) => u.UserID !== user.UserID);
+        }
+        return [...prev, user];
       });
     } else {
       setSelectedUsers([user]);
     }
     setErrorMessage(null);
+  };
+
+  const handleUserHover = (userId: string, isEntering: boolean) => {
+    if (!isGroup || !selectedUsers.some((u) => u.UserID === userId)) return;
+
+    if (isEntering) {
+      // Clear any existing timer for this user
+      if (hoverTimers.current[userId]) {
+        clearTimeout(hoverTimers.current[userId]);
+      }
+
+      // Start a new timer
+      setHoverStates((prev) => ({ ...prev, [userId]: 0 }));
+
+      // Timer for intermediate color (2s)
+      hoverTimers.current[userId] = setTimeout(() => {
+        setHoverStates((prev) => ({ ...prev, [userId]: 1 }));
+
+        // Timer for full color (additional 1s)
+        hoverTimers.current[userId] = setTimeout(() => {
+          setHoverStates((prev) => ({ ...prev, [userId]: 2 }));
+          // Toggle admin status
+          setSelectedAdmins((current) => {
+            const isAdmin = current.includes(userId);
+            return isAdmin
+              ? current.filter((id) => id !== userId)
+              : [...current, userId];
+          });
+        }, 1000);
+      }, 2000);
+    } else {
+      // Clear timer when mouse leaves
+      if (hoverTimers.current[userId]) {
+        clearTimeout(hoverTimers.current[userId]);
+        delete hoverTimers.current[userId];
+      }
+      // Reset hover state if not yet an admin
+      if (!selectedAdmins.includes(userId)) {
+        setHoverStates((prev) => {
+          const newState = { ...prev };
+          delete newState[userId];
+          return newState;
+        });
+      }
+    }
+  };
+
+  const getNameStyle = (userId: string) => {
+    if (!isGroup) return {};
+
+    const hoverState = hoverStates[userId] || 0;
+    const isAdmin = selectedAdmins.includes(userId);
+
+    if (isAdmin) {
+      return { color: "#4F46E5" }; // Admin color
+    }
+
+    switch (hoverState) {
+      case 1:
+        return { color: "#A5B4FC" }; // Intermediate color
+      case 2:
+        return { color: "#4F46E5" }; // Full color
+      default:
+        return { color: "white" }; // Default color
+    }
   };
 
   const showTemporaryError = (message: string) => {
@@ -59,17 +138,33 @@ const NewConversation: React.FC<CreateConversationProps> = ({
         url: user.PictureURL,
       }));
 
+      // Add logged-in user to the users list
       formattedUsers.push(loggedInUserObject);
+
+      // Create admins list with selected admins and the logged-in user
+      const admins = [
+        ...selectedAdmins.map((adminId) => {
+          const adminUser = selectedUsers.find((u) => u.UserID === adminId);
+          return {
+            id: adminUser.UserID,
+            username: adminUser.UserName,
+            url: adminUser.PictureURL,
+          };
+        }),
+        loggedInUserObject, // Always include the creator as admin
+      ];
 
       const endpoint = isGroup ? "/api/groupMessage" : "/api/directMessage";
 
       const response = await axios.post(endpoint, {
         users: formattedUsers,
+        admins: isGroup ? admins : undefined,
       });
 
       console.log("Successfully Created Conversation", response.data);
       setShowModal(false);
       setSelectedUsers([]);
+      setSelectedAdmins([]);
       setErrorMessage(null);
 
       if (onConversationCreated) {
@@ -96,7 +191,12 @@ const NewConversation: React.FC<CreateConversationProps> = ({
             <h3>Select {isGroup ? "Users" : "a User"}</h3>
             <div className="modal-content">
               {allUsers.map((user) => (
-                <label key={user.UserID} className="user-option">
+                <label
+                  key={user.UserID}
+                  className="user-option"
+                  onMouseEnter={() => handleUserHover(user.UserID, true)}
+                  onMouseLeave={() => handleUserHover(user.UserID, false)}
+                >
                   <input
                     type={isGroup ? "checkbox" : "radio"}
                     checked={selectedUsers.some(
@@ -105,7 +205,10 @@ const NewConversation: React.FC<CreateConversationProps> = ({
                     onChange={() => handleUserSelect(user)}
                     name="user-selection"
                   />
-                  <span>{user.UserName}</span>
+                  <span style={getNameStyle(user.UserID)}>
+                    {user.UserName}
+                    {selectedAdmins.includes(user.UserID) && " (Admin)"}
+                  </span>
                 </label>
               ))}
             </div>
@@ -122,6 +225,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
               onClick={() => {
                 setShowModal(false);
                 setSelectedUsers([]);
+                setSelectedAdmins([]);
                 setErrorMessage(null);
               }}
             >
