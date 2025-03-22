@@ -176,14 +176,8 @@ const Chat: React.FC<ChatProps> = ({
     }
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      const newMsg = {
-        id: Date.now().toString(),
-        senderId: currentUserId,
-        content: newMessage.trim(),
-      };
-
       const sendMessage = async (
         groupID: string,
         messageText: string,
@@ -212,16 +206,26 @@ const Chat: React.FC<ChatProps> = ({
         }
       };
 
-      sendMessage(selectedConversation, newMsg.content, currentUserId)
-        .then((data) => {
-          console.log("Message status:", data.success);
-        })
-        .catch((error) => {
-          console.error("Failed to send message:", error);
-        });
-
-      setMessages([...messages, newMsg]);
-      setNewMessage("");
+      try {
+        const data = await sendMessage(
+          selectedConversation,
+          newMessage.trim(),
+          currentUserId
+        );
+        if (data.success) {
+          // Create message object with current user's information
+          const newMessageObj = {
+            id: Date.now(),
+            message: newMessage.trim(),
+            sender: currentUserId,
+            time: new Date(),
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessageObj]);
+          setNewMessage("");
+        }
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      }
     }
   };
 
