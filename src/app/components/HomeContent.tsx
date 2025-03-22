@@ -117,6 +117,41 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     }
   };
 
+  const refreshConversations = () => {
+    if (loggedInUserID) {
+      axios
+        .get(`/api/directMessage?userID=${loggedInUserID}`)
+        .then((response) => {
+          const processedConversations = response.data.conversations.map(
+            (conversation) => {
+              return {
+                ...conversation,
+                users: conversation.users.filter(
+                  (user) => user.id !== loggedInUserID
+                ),
+              };
+            }
+          );
+
+          const directMsgs = processedConversations.filter(
+            (conv) => !conv.isGroup
+          );
+          const groupMsgs = processedConversations.filter(
+            (conv) => conv.isGroup
+          );
+
+          const groupIDs = processedConversations.map(
+            (conversation) => conversation._id
+          );
+
+          setDirectMessages(directMsgs);
+          setGroupChats(groupMsgs);
+          setConversationIDs(groupIDs);
+        })
+        .catch((error) => console.error("Error fetching conversations", error));
+    }
+  };
+
   return (
     <div style={styles.container}>
       <ChatSidebar
@@ -126,6 +161,7 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
         groupChats={groupChats}
         selectedConversationId={selectedConversationId}
         allUsers={AllUsers}
+        onConversationCreated={refreshConversations}
       />
       <div style={styles.chatArea}>
         {selectedConversation ? (

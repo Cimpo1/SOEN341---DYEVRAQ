@@ -21,6 +21,7 @@ interface ChatSidebarProps {
   groupChats: Conversation[];
   selectedConversationId?: string | null;
   allUsers: UserStoredInDB[];
+  onConversationCreated?: () => void;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
@@ -30,6 +31,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   groupChats,
   selectedConversationId,
   allUsers,
+  onConversationCreated,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -49,6 +51,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             allUsers={allUsers}
             session={session}
             key="direct-messages"
+            onConversationCreated={onConversationCreated}
           />
           <div className={styles.scrollableContent}>
             {directMessages.map((conversation, index) => (
@@ -81,6 +84,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               key="group-messages"
               buttonText="Create a group"
               isGroup={true}
+              onConversationCreated={onConversationCreated}
             />
           </div>
         </div>

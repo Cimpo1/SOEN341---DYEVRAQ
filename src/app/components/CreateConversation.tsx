@@ -7,6 +7,7 @@ interface CreateConversationProps {
   session: any; // eslint-disable-line
   buttonText?: string;
   isGroup?: boolean;
+  onConversationCreated?: () => void;
 }
 
 const NewConversation: React.FC<CreateConversationProps> = ({
@@ -14,6 +15,7 @@ const NewConversation: React.FC<CreateConversationProps> = ({
   session,
   buttonText = "New Conversation",
   isGroup = false,
+  onConversationCreated,
 }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -71,6 +73,10 @@ const NewConversation: React.FC<CreateConversationProps> = ({
       setShowModal(false);
       setSelectedUsers([]);
       setErrorMessage(null);
+
+      if (onConversationCreated) {
+        onConversationCreated();
+      }
     } catch (error) {
       if (error.response?.status === 400) {
         showTemporaryError("A conversation already exists with this user");
