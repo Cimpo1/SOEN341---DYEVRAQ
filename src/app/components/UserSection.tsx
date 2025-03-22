@@ -51,33 +51,33 @@ const GroupIcon: React.FC<{ users: User[]; size: number }> = ({
       fontSize: `${circleSize * 0.4}px`,
       fontWeight: "500",
     },
-    // Styles for groups of 3 (two circles diagonally)
+
     smallGroup: {
       circle1: {
         top: "10%",
-        left: "15%",
+        left: "-20%",
         zIndex: 2,
       },
       circle2: {
         bottom: "10%",
-        right: "5%",
+        right: "40%",
         zIndex: 1,
       },
     },
-    // Styles for larger groups (triangle formation)
+
     largeGroup: {
       circle1: {
         top: 0,
-        left: "50%",
+        left: "26%",
         transform: "translateX(-50%)",
       },
       circle2: {
         bottom: 0,
-        left: 0,
+        left: -10,
       },
       circle3: {
         bottom: 0,
-        right: 0,
+        right: 10,
       },
     },
   };
