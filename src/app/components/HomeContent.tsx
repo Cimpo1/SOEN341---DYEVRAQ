@@ -187,6 +187,16 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
           );
 
           setGroupChats(processedGroupMessages);
+
+          // Update the selected conversation if it exists
+          if (selectedConversationId) {
+            const updatedConversation = processedGroupMessages.find(
+              (conv) => conv._id === selectedConversationId
+            );
+            if (updatedConversation) {
+              setSelectedConversation(updatedConversation);
+            }
+          }
         })
         .catch((error) =>
           console.error("Error fetching group messages", error)
@@ -210,6 +220,14 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
         selectedChannelId={selectedChannelId}
         onChannelSelect={(channelId) => setSelectedChannelId(channelId)}
         isVisible={selectedConversation?.isGroup ?? false}
+        currentUserId={loggedInUserID}
+        isAdmin={
+          selectedConversation?.admins?.some(
+            (admin) => admin.id === loggedInUserID
+          ) ?? false
+        }
+        groupId={selectedConversation?._id ?? ""}
+        onChannelCreated={refreshConversations}
       />
       <div style={styles.chatArea}>
         {selectedConversation ? (
