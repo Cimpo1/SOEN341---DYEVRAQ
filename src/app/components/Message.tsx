@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import UserIcon from "./UserIcon";
 import { User } from "./HomeContent";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export interface Message {
   id: string;
@@ -70,20 +72,27 @@ const styles = {
   deleteButton: {
     position: "absolute" as const,
     top: "-10px",
-    backgroundColor: "#dc2626",
+    backgroundColor: "#FF1E1E",
     color: "white",
     border: "none",
     borderRadius: "50%",
-    width: "20px",
-    height: "20px",
+    width: "24px",
+    height: "24px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
     opacity: 0,
-    transition: "opacity 0.2s ease",
-    fontSize: "14px",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     padding: 0,
+    boxShadow:
+      "0 0 10px rgba(255, 30, 30, 0.5), 0 0 20px rgba(255, 30, 30, 0.3)",
+    "&:hover": {
+      transform: "scale(1.1)",
+      backgroundColor: "#FF0000",
+      boxShadow: "0 0 15px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.4)",
+      color: "rgba(255, 255, 255, 0.95)",
+    },
   },
   messageHover: {
     "&:hover": {
@@ -158,7 +167,13 @@ const Message: React.FC<MessageProps> = ({
               }}
               title="Delete message"
             >
-              ×
+              <FontAwesomeIcon
+                icon={faTrash}
+                size="sm"
+                style={{
+                  filter: "drop-shadow(0 0 2px rgba(255, 255, 255, 0.5))",
+                }}
+              />
             </button>
           )}
         </div>
