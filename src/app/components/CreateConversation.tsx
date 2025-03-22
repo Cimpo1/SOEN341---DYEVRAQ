@@ -41,10 +41,16 @@ const NewConversation: React.FC<CreateConversationProps> = ({
       setSelectedUsers((prev) => {
         const isAlreadySelected = prev.some((u) => u.UserID === user.UserID);
         if (isAlreadySelected) {
-          // If removing a user, also remove them from admins if they were one
+          // Remove from admins when unselecting
           setSelectedAdmins((current) =>
             current.filter((id) => id !== user.UserID)
           );
+          // Reset hover state when unselecting
+          setHoverStates((prev) => {
+            const newState = { ...prev };
+            delete newState[user.UserID];
+            return newState;
+          });
           return prev.filter((u) => u.UserID !== user.UserID);
         }
         return [...prev, user];
@@ -102,6 +108,9 @@ const NewConversation: React.FC<CreateConversationProps> = ({
 
   const getNameStyle = (userId: string) => {
     if (!isGroup) return {};
+
+    const isSelected = selectedUsers.some((u) => u.UserID === userId);
+    if (!isSelected) return { color: "white" }; // Always white if not selected
 
     const hoverState = hoverStates[userId] || 0;
     const isAdmin = selectedAdmins.includes(userId);
@@ -207,7 +216,9 @@ const NewConversation: React.FC<CreateConversationProps> = ({
                   />
                   <span style={getNameStyle(user.UserID)}>
                     {user.UserName}
-                    {selectedAdmins.includes(user.UserID) && " (Admin)"}
+                    {selectedUsers.some((u) => u.UserID === user.UserID) &&
+                      selectedAdmins.includes(user.UserID) &&
+                      " (Admin)"}
                   </span>
                 </label>
               ))}
