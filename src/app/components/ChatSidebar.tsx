@@ -5,6 +5,8 @@ import styles from "./ChatSidebar.module.css";
 import UserSection from "./UserSection";
 import { Conversation, Channel } from "./HomeContent";
 import CreateConversation from "./CreateConversation";
+import UserIcon from "./UserIcon";
+import axios from "axios";
 
 export interface UserStoredInDB {
   UserID: string;
@@ -49,6 +51,69 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     }
   };
 
+  const handleAIChatClick = () => {
+    // Check if AI chat already exists in directMessages
+    const existingAIChat = directMessages.find((conv) =>
+      conv.users.some((user) => user.id === "ai_chat_bot")
+    );
+
+    if (!existingAIChat) {
+      // Create AI chat conversation in database
+      const aiUser = {
+        id: "ai_chat_bot",
+        username: "AI Assistant",
+        url: "https://ui-avatars.com/api/?name=AI&background=4F46E5&color=fff",
+      };
+
+      const loggedInUser = {
+        id: session.user.sub,
+        username: session.user.name || "User",
+        url:
+          session.user.picture ||
+          "https://ui-avatars.com/api/?name=U&background=4F46E5&color=fff",
+      };
+
+      // Ensure we have all required fields and they're not undefined
+      if (!loggedInUser.username || !loggedInUser.url) {
+        console.error("Missing required user information");
+        return;
+      }
+
+      axios
+        .post("/api/directMessage", {
+          users: [loggedInUser, aiUser],
+        })
+        .then(() => {
+          if (onConversationCreated) {
+            onConversationCreated(); // This will refresh the conversations list
+          }
+        })
+        .catch((error) => {
+          console.error("Error creating AI chat:", error);
+          if (error.response?.data) {
+            console.error("Server response:", error.response.data);
+          }
+        });
+    }
+
+    // Use the existing AI chat's ID if it exists, otherwise use our generated ID
+    const chatId = existingAIChat
+      ? existingAIChat._id
+      : `aiChatBot_${session.user.sub}`;
+    onConversationSelect?.(chatId);
+  };
+
+  // Filter out AI chat bot from direct messages
+  const filteredDirectMessages = directMessages.filter(
+    (conv) => !conv.users.some((user) => user.id === "ai_chat_bot")
+  );
+
+  // Check if AI chat is selected
+  const aiChat = directMessages.find((conv) =>
+    conv.users.some((user) => user.id === "ai_chat_bot")
+  );
+  const isAIChatSelected = aiChat && selectedConversationId === aiChat._id;
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarContent}>
@@ -68,7 +133,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             onConversationCreated={onConversationCreated}
           />
           <div className={styles.scrollableContent}>
-            {directMessages.map((conversation, index) => (
+            {filteredDirectMessages.map((conversation, index) => (
               <UserSection
                 key={index}
                 conversationId={conversation._id}
@@ -87,6 +152,14 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 />
               </div>
             ))}
+          </div>
+          <div className={styles.aiChatContainer}>
+            <UserSection
+              conversationId={aiChat?._id || `aiChatBot_${session.user.sub}`}
+              users={[{ id: "ai_chat_bot", username: "🤖", url: "" }]}
+              isSelected={isAIChatSelected}
+              onClick={handleAIChatClick}
+            />
           </div>
         </div>
       </div>

@@ -43,7 +43,7 @@ const UserIcon: React.FC<UserIconProps> = ({ imageUrl, size, name }) => {
       ) : (
         getFirstLetter(name)
       )} */}
-      {name ? name.charAt(0).toUpperCase() : "?"}
+      {name ? (name.length === 2 ? name : name.charAt(0).toUpperCase()) : "?"}
     </div>
   );
 };

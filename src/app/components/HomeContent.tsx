@@ -137,6 +137,7 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
     conversationId: string,
     channelId?: string
   ) => {
+    // Regular conversation handling - AI chat will be included in directMessages
     const conversation = [...directMessages, ...groupChats].find(
       (conv) => conv._id === conversationId
     );
