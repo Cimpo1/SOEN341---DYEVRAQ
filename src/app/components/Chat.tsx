@@ -3,6 +3,7 @@ import { Message } from "./Message";
 import MessageComponent from "./Message";
 import axios from "axios";
 import { Conversation } from "./HomeContent";
+import UserIcon from "./UserIcon";
 
 interface ChatProps {
   currentUserId: string;
@@ -85,6 +86,96 @@ const styles = {
     cursor: "pointer",
     fontWeight: "500",
   },
+  thinkingContainer: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "8px",
+    marginTop: "8px",
+    marginBottom: "8px",
+  },
+  thinkingAvatarContainer: {
+    width: "32px",
+    height: "32px",
+    borderRadius: "50%",
+    overflow: "hidden",
+    flexShrink: 0,
+  },
+  thinkingMessageContent: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "4px",
+  },
+  thinkingSenderName: {
+    color: "#ffffff",
+    fontSize: "0.9rem",
+    fontWeight: "500",
+  },
+  thinkingBubble: {
+    backgroundColor: "#3f3f3f",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    maxWidth: "70%",
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+  },
+  thinkingDot: {
+    width: "6px",
+    height: "6px",
+    backgroundColor: "#808080",
+    borderRadius: "50%",
+    transition: "background-color 1s ease",
+  },
+  thinkingDotActive: {
+    backgroundColor: "#000000",
+  },
+  "@keyframes thinking": {
+    "0%, 100%": {
+      backgroundColor: "#808080",
+    },
+    "25%": {
+      backgroundColor: "#000000",
+    },
+    "50%": {
+      backgroundColor: "#808080",
+    },
+  },
+};
+
+const ThinkingAnimation: React.FC = () => {
+  return (
+    <div style={styles.thinkingContainer}>
+      <div style={styles.thinkingAvatarContainer}>
+        <UserIcon imageUrl="" name="🤖" size={32} />
+      </div>
+      <div style={styles.thinkingMessageContent}>
+        <div style={styles.thinkingSenderName}>AI Assistant</div>
+        <div style={styles.thinkingBubble}>
+          <div
+            style={{
+              ...styles.thinkingDot,
+              animation: "thinking 3s infinite",
+              animationDelay: "0s",
+            }}
+          />
+          <div
+            style={{
+              ...styles.thinkingDot,
+              animation: "thinking 3s infinite",
+              animationDelay: "1s",
+            }}
+          />
+          <div
+            style={{
+              ...styles.thinkingDot,
+              animation: "thinking 3s infinite",
+              animationDelay: "2s",
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const Chat: React.FC<ChatProps> = ({
@@ -96,6 +187,7 @@ const Chat: React.FC<ChatProps> = ({
 }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const previousMessageLengthRef = useRef(0);
@@ -224,22 +316,30 @@ const Chat: React.FC<ChatProps> = ({
           setNewMessage("");
 
           // Check if this is an AI chat conversation
-          const isAIChat = conversation.users.some(user => user.id === "ai_chat_bot");
+          const isAIChat = conversation.users.some(
+            (user) => user.id === "ai_chat_bot"
+          );
           if (isAIChat) {
+            setIsThinking(true);
             // Wait for 1 second before sending AI response
             setTimeout(async () => {
               try {
                 // Get the conversation history
-                const conversationHistory = messages.map(msg => 
-                  `${msg.sender === currentUserId ? 'User' : 'Assistant'}: ${msg.message}`
-                ).join('\n');
-                
+                const conversationHistory = messages
+                  .map(
+                    (msg) =>
+                      `${
+                        msg.sender === currentUserId ? "User" : "Assistant"
+                      }: ${msg.message}`
+                  )
+                  .join("\n");
+
                 // Add the current message to the history
                 const fullHistory = `${conversationHistory}\nUser: ${newMessage.trim()}`;
-                
+
                 // Call the AI endpoint
-                const aiResponse = await axios.post('/api/AIChatBot', {
-                  question: fullHistory
+                const aiResponse = await axios.post("/api/AIChatBot", {
+                  question: fullHistory,
                 });
 
                 if (aiResponse.data.response) {
@@ -249,7 +349,7 @@ const Chat: React.FC<ChatProps> = ({
                     sender: "ai_chat_bot",
                     time: new Date(),
                   };
-                  
+
                   // Send AI response to the database
                   await sendMessage(
                     selectedConversation,
@@ -263,7 +363,8 @@ const Chat: React.FC<ChatProps> = ({
                 // Fallback error message
                 const errorMessage = {
                   id: Date.now() + 1,
-                  message: "I apologize, but I'm having trouble processing your request right now. Please try again later.",
+                  message:
+                    "I apologize, but I'm having trouble processing your request right now. Please try again later.",
                   sender: "ai_chat_bot",
                   time: new Date(),
                 };
@@ -273,6 +374,8 @@ const Chat: React.FC<ChatProps> = ({
                   errorMessage.sender
                 );
                 setMessages((prevMessages) => [...prevMessages, errorMessage]);
+              } finally {
+                setIsThinking(false);
               }
             }, 1000);
           }
@@ -329,6 +432,7 @@ const Chat: React.FC<ChatProps> = ({
             messageId={msgObj.id}
           />
         ))}
+        {isThinking && <ThinkingAnimation />}
         <div ref={messagesEndRef} />
       </div>
 
