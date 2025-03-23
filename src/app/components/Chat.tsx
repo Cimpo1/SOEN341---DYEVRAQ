@@ -228,23 +228,51 @@ const Chat: React.FC<ChatProps> = ({
           if (isAIChat) {
             // Wait for 1 second before sending AI response
             setTimeout(async () => {
-              const aiResponse = {
-                id: Date.now() + 1,
-                message: "Hello! I am an AI assistant. This is a hardcoded response. I will be more intelligent soon! 🤖",
-                sender: "ai_chat_bot",
-                time: new Date(),
-              };
-              
-              // Send AI response to the database
               try {
+                // Get the conversation history
+                const conversationHistory = messages.map(msg => 
+                  `${msg.sender === currentUserId ? 'User' : 'Assistant'}: ${msg.message}`
+                ).join('\n');
+                
+                // Add the current message to the history
+                const fullHistory = `${conversationHistory}\nUser: ${newMessage.trim()}`;
+                
+                // Call the AI endpoint
+                const aiResponse = await axios.post('/api/AIChatBot', {
+                  question: fullHistory
+                });
+
+                if (aiResponse.data.response) {
+                  const aiMessage = {
+                    id: Date.now() + 1,
+                    message: aiResponse.data.response,
+                    sender: "ai_chat_bot",
+                    time: new Date(),
+                  };
+                  
+                  // Send AI response to the database
+                  await sendMessage(
+                    selectedConversation,
+                    aiMessage.message,
+                    aiMessage.sender
+                  );
+                  setMessages((prevMessages) => [...prevMessages, aiMessage]);
+                }
+              } catch (error) {
+                console.error("Error getting AI response:", error);
+                // Fallback error message
+                const errorMessage = {
+                  id: Date.now() + 1,
+                  message: "I apologize, but I'm having trouble processing your request right now. Please try again later.",
+                  sender: "ai_chat_bot",
+                  time: new Date(),
+                };
                 await sendMessage(
                   selectedConversation,
-                  aiResponse.message,
-                  aiResponse.sender
+                  errorMessage.message,
+                  errorMessage.sender
                 );
-                setMessages((prevMessages) => [...prevMessages, aiResponse]);
-              } catch (error) {
-                console.error("Error sending AI response:", error);
+                setMessages((prevMessages) => [...prevMessages, errorMessage]);
               }
             }, 1000);
           }
