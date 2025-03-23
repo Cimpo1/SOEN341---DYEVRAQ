@@ -115,6 +115,7 @@ const Message: React.FC<MessageProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const senderUser = users.find((user) => user.id === senderId);
+  const isAIChatBot = senderId === "ai_chat_bot";
 
   return (
     <div
@@ -135,7 +136,7 @@ const Message: React.FC<MessageProps> = ({
         </div>
       )}
       <div style={styles.messageContent}>
-        {!isOwnMessage && (
+        {!isOwnMessage && !isAIChatBot && (
           <div style={styles.senderName}>
             {senderUser ? senderUser.username : "Not found"}
           </div>

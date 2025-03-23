@@ -222,6 +222,32 @@ const Chat: React.FC<ChatProps> = ({
           };
           setMessages((prevMessages) => [...prevMessages, newMessageObj]);
           setNewMessage("");
+
+          // Check if this is an AI chat conversation
+          const isAIChat = conversation.users.some(user => user.id === "ai_chat_bot");
+          if (isAIChat) {
+            // Wait for 1 second before sending AI response
+            setTimeout(async () => {
+              const aiResponse = {
+                id: Date.now() + 1,
+                message: "Hello! I am an AI assistant. This is a hardcoded response. I will be more intelligent soon! 🤖",
+                sender: "ai_chat_bot",
+                time: new Date(),
+              };
+              
+              // Send AI response to the database
+              try {
+                await sendMessage(
+                  selectedConversation,
+                  aiResponse.message,
+                  aiResponse.sender
+                );
+                setMessages((prevMessages) => [...prevMessages, aiResponse]);
+              } catch (error) {
+                console.error("Error sending AI response:", error);
+              }
+            }, 1000);
+          }
         }
       } catch (error) {
         console.error("Failed to send message:", error);
