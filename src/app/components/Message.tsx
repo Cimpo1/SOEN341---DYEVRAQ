@@ -130,7 +130,13 @@ const Message: React.FC<MessageProps> = ({
         <div style={styles.avatarContainer}>
           <UserIcon
             imageUrl={senderUser ? senderUser.url : ""}
-            name={senderUser ? senderUser.username : "Not found"}
+            name={
+              isAIChatBot
+                ? "🤖"
+                : senderUser
+                ? senderUser.username
+                : "Not found"
+            }
             size={32}
           />
         </div>
@@ -140,6 +146,9 @@ const Message: React.FC<MessageProps> = ({
           <div style={styles.senderName}>
             {senderUser ? senderUser.username : "Not found"}
           </div>
+        )}
+        {!isOwnMessage && isAIChatBot && (
+          <div style={styles.senderName}>AI Assistant</div>
         )}
         <div
           style={{
