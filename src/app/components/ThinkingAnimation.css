@@ -1,0 +1,87 @@
+.thinking-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation-duration: 1.8s;
+  animation-iteration-count: infinite;
+  transform-origin: center;
+  display: inline-block;
+  flex-shrink: 0;
+  position: relative;
+  vertical-align: middle;
+}
+
+.thinking-dot-1 {
+  background-color: #00e6cc;
+  box-shadow: 
+    0 0 10px #00e6cc,
+    0 0 20px #00e6cc,
+    0 0 30px rgba(0, 230, 204, 0.5);
+  animation-name: pulse1;
+  animation-timing-function: cubic-bezier(0.28, 0.84, 0.42, 1);
+}
+
+.thinking-dot-2 {
+  background-color: #00bfff;
+  box-shadow: 
+    0 0 10px #00bfff,
+    0 0 20px #00bfff,
+    0 0 30px rgba(0, 191, 255, 0.5);
+  animation-name: pulse2;
+  animation-timing-function: cubic-bezier(0.28, 0.84, 0.42, 1);
+}
+
+.thinking-dot-3 {
+  background-color: #7b68ee;
+  box-shadow: 
+    0 0 10px #7b68ee,
+    0 0 20px #7b68ee,
+    0 0 30px rgba(123, 104, 238, 0.5);
+  animation-name: pulse3;
+  animation-timing-function: cubic-bezier(0.28, 0.84, 0.42, 1);
+}
+
+@keyframes pulse1 {
+  0%, 10%, 70%, 100% {
+    transform: scale(1);
+    border-radius: 50%;
+  }
+  25%, 55% {
+    transform: scaleY(2);
+    border-radius: 6px;
+    box-shadow: 
+      0 0 15px #00e6cc,
+      0 0 25px #00e6cc,
+      0 0 35px rgba(0, 230, 204, 0.7);
+  }
+}
+
+@keyframes pulse2 {
+  0%, 40%, 100% {
+    transform: scale(1);
+    border-radius: 50%;
+  }
+  55%, 85% {
+    transform: scaleY(2);
+    border-radius: 6px;
+    box-shadow: 
+      0 0 15px #00bfff,
+      0 0 25px #00bfff,
+      0 0 35px rgba(0, 191, 255, 0.7);
+  }
+}
+
+@keyframes pulse3 {
+  0%, 70%, 100% {
+    transform: scale(1);
+    border-radius: 50%;
+  }
+  85%, 15% {
+    transform: scaleY(2);
+    border-radius: 6px;
+    box-shadow: 
+      0 0 15px #7b68ee,
+      0 0 25px #7b68ee,
+      0 0 35px rgba(123, 104, 238, 0.7);
+  }
+} 

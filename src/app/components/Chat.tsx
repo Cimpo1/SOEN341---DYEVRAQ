@@ -4,6 +4,7 @@ import MessageComponent from "./Message";
 import axios from "axios";
 import { Conversation } from "./HomeContent";
 import UserIcon from "./UserIcon";
+import "./ThinkingAnimation.css";
 
 interface ChatProps {
   currentUserId: string;
@@ -111,34 +112,15 @@ const styles = {
     fontWeight: "500",
   },
   thinkingBubble: {
-    backgroundColor: "#3f3f3f",
-    padding: "8px 12px",
+    backgroundColor: "#2c2c2c",
+    padding: "16px 20px",
     borderRadius: "8px",
     maxWidth: "70%",
     display: "flex",
     alignItems: "center",
-    gap: "4px",
-  },
-  thinkingDot: {
-    width: "6px",
-    height: "6px",
-    backgroundColor: "#808080",
-    borderRadius: "50%",
-    transition: "background-color 1s ease",
-  },
-  thinkingDotActive: {
-    backgroundColor: "#000000",
-  },
-  "@keyframes thinking": {
-    "0%, 100%": {
-      backgroundColor: "#808080",
-    },
-    "25%": {
-      backgroundColor: "#000000",
-    },
-    "50%": {
-      backgroundColor: "#808080",
-    },
+    gap: "12px",
+    minHeight: "40px",
+    lineHeight: 1,
   },
 };
 
@@ -151,27 +133,9 @@ const ThinkingAnimation: React.FC = () => {
       <div style={styles.thinkingMessageContent}>
         <div style={styles.thinkingSenderName}>AI Assistant</div>
         <div style={styles.thinkingBubble}>
-          <div
-            style={{
-              ...styles.thinkingDot,
-              animation: "thinking 3s infinite",
-              animationDelay: "0s",
-            }}
-          />
-          <div
-            style={{
-              ...styles.thinkingDot,
-              animation: "thinking 3s infinite",
-              animationDelay: "1s",
-            }}
-          />
-          <div
-            style={{
-              ...styles.thinkingDot,
-              animation: "thinking 3s infinite",
-              animationDelay: "2s",
-            }}
-          />
+          <div className="thinking-dot thinking-dot-1" />
+          <div className="thinking-dot thinking-dot-2" />
+          <div className="thinking-dot thinking-dot-3" />
         </div>
       </div>
     </div>
