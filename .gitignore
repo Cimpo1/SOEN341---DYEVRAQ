@@ -39,3 +39,7 @@ next-env.d.ts
 
 # temp
 /temp
+
+# .CLJ
+/.lsp
+/.clj-kondo

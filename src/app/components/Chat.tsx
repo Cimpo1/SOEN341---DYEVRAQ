@@ -2,10 +2,27 @@ import React, { useState, useEffect, useRef } from "react";
 import { Message } from "./Message";
 import MessageComponent from "./Message";
 import axios from "axios";
+import { Conversation } from "./HomeContent";
+import UserIcon from "./UserIcon";
+import "./ThinkingAnimation.css";
 
 interface ChatProps {
   currentUserId: string;
+  conversation: Conversation;
   selectedConversation: string;
+  selectedChannelId?: string | null;
+  onChannelSelect?: (value: string) => void;
+}
+
+interface Channel {
+  id: string;
+  name: string;
+  messages: Array<{
+    id: number;
+    message: string;
+    time: Date;
+    sender: string;
+  }>;
 }
 
 const styles = {
@@ -20,11 +37,22 @@ const styles = {
     padding: "16px",
     borderBottom: "1px solid #3f3f3f",
     backgroundColor: "#2c2c2c",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   headerText: {
     color: "#ffffff",
     fontSize: "1.1rem",
     fontWeight: "500",
+  },
+  channelSelect: {
+    padding: "8px",
+    backgroundColor: "#3f3f3f",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
   messagesContainer: {
     flex: 1,
@@ -59,60 +87,173 @@ const styles = {
     cursor: "pointer",
     fontWeight: "500",
   },
+  thinkingContainer: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "8px",
+    marginTop: "8px",
+    marginBottom: "8px",
+  },
+  thinkingAvatarContainer: {
+    width: "32px",
+    height: "32px",
+    borderRadius: "50%",
+    overflow: "hidden",
+    flexShrink: 0,
+  },
+  thinkingMessageContent: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "4px",
+  },
+  thinkingSenderName: {
+    color: "#ffffff",
+    fontSize: "0.9rem",
+    fontWeight: "500",
+  },
+  thinkingBubble: {
+    backgroundColor: "#2c2c2c",
+    padding: "16px 20px",
+    borderRadius: "8px",
+    maxWidth: "70%",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    minHeight: "40px",
+    lineHeight: 1,
+  },
 };
 
-const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
+const ThinkingAnimation: React.FC = () => {
+  return (
+    <div style={styles.thinkingContainer}>
+      <div style={styles.thinkingAvatarContainer}>
+        <UserIcon imageUrl="" name="🤖" size={32} />
+      </div>
+      <div style={styles.thinkingMessageContent}>
+        <div style={styles.thinkingSenderName}>AI Assistant</div>
+        <div style={styles.thinkingBubble}>
+          <div className="thinking-dot thinking-dot-1" />
+          <div className="thinking-dot thinking-dot-2" />
+          <div className="thinking-dot thinking-dot-3" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Chat: React.FC<ChatProps> = ({
+  currentUserId,
+  conversation,
+  selectedConversation,
+  selectedChannelId,
+  onChannelSelect,
+}) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const previousMessageLengthRef = useRef(0);
+  const [autoScroll, setAutoScroll] = useState(true);
+
+  const isAdmin =
+    conversation.admins?.some((admin) => admin.id === currentUserId) ?? false;
 
   useEffect(() => {
-    if (selectedConversation) {
-      axios
-        .get(`/api/message?GroupID=${selectedConversation}`)
-        .then((response) => {
-          setMessages(response.data.sortedMessages);
-          console.log("Response data:", response.data);
-        })
-        .catch((error) => console.error("Error fetching messages", error));
-    }
-  }, []);
+    let intervalId = null;
 
-  const isNearBottom = () => {
+    const fetchMessages = () => {
+      if (selectedConversation) {
+        const url = conversation?.isGroup
+          ? `/api/message?GroupID=${selectedConversation}&channelId=${selectedChannelId}`
+          : `/api/message?GroupID=${selectedConversation}`;
+
+        axios
+          .get(url)
+          .then((response) => {
+            if (!response.data.success) {
+              setMessages([]);
+              previousMessageLengthRef.current = 0;
+              return;
+            }
+
+            const newMessages = response.data.sortedMessages || [];
+            if (newMessages.length !== previousMessageLengthRef.current) {
+              setMessages(newMessages);
+              previousMessageLengthRef.current = newMessages.length;
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching messages", error);
+            setMessages([]);
+            previousMessageLengthRef.current = 0;
+          });
+      }
+    };
+
+    setMessages([]);
+    previousMessageLengthRef.current = 0;
+    fetchMessages();
+
+    intervalId = setInterval(fetchMessages, 500);
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [selectedConversation, selectedChannelId]);
+
+  const handleScroll = () => {
     if (containerRef.current) {
-      const container = containerRef.current;
-      const threshold = 150;
-      return (
-        container.scrollHeight - container.scrollTop - container.clientHeight <
-        threshold
-      );
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      const isBottom = scrollHeight - scrollTop <= clientHeight + 150;
+
+      if (isBottom) {
+        setAutoScroll(true);
+      } else {
+        setAutoScroll(false);
+      }
     }
-    return false;
   };
 
   useEffect(() => {
-    if (isNearBottom() && messagesEndRef.current) {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (autoScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      const newMsg: Message = {
-        id: Date.now().toString(),
-        senderId: currentUserId,
-        content: newMessage.trim(),
-      };
-
-      const sendMessage = async (groupID, messageText, senderID) => {
+      const sendMessage = async (
+        groupID: string,
+        messageText: string,
+        senderID: string
+      ) => {
         try {
-          const response = await axios.post("/api/message", {
-            GroupID: groupID,
-            message: messageText,
-            sender: senderID,
-          });
+          const payload = conversation?.isGroup
+            ? {
+                GroupID: groupID,
+                message: messageText,
+                sender: senderID,
+                channelId: selectedChannelId,
+              }
+            : {
+                GroupID: groupID,
+                message: messageText,
+                sender: senderID,
+              };
 
+          const response = await axios.post("/api/message", payload);
           console.log("Message sent successfully:", response.data);
           return response.data;
         } catch (error) {
@@ -121,18 +262,91 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
         }
       };
 
-      sendMessage(selectedConversation, newMsg.content, currentUserId)
-        .then((data) => {
-          // Handle successful message sending
-          console.log("Message status:", data.success);
-        })
-        .catch((error) => {
-          // Handle errors
-          console.error("Failed to send message:", error);
-        });
+      try {
+        const data = await sendMessage(
+          selectedConversation,
+          newMessage.trim(),
+          currentUserId
+        );
+        if (data.success) {
+          // Create message object with current user's information
+          const newMessageObj = {
+            id: Date.now(),
+            message: newMessage.trim(),
+            sender: currentUserId,
+            time: new Date(),
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessageObj]);
+          setNewMessage("");
 
-      setMessages([...messages, newMsg]);
-      setNewMessage("");
+          // Check if this is an AI chat conversation
+          const isAIChat = conversation.users.some(
+            (user) => user.id === "ai_chat_bot"
+          );
+          if (isAIChat) {
+            setIsThinking(true);
+            // Wait for 1 second before sending AI response
+            setTimeout(async () => {
+              try {
+                // Get the conversation history
+                const conversationHistory = messages
+                  .map(
+                    (msg) =>
+                      `${
+                        msg.sender === currentUserId ? "User" : "Assistant"
+                      }: ${msg.message}`
+                  )
+                  .join("\n");
+
+                // Add the current message to the history
+                const fullHistory = `${conversationHistory}\nUser: ${newMessage.trim()}`;
+
+                // Call the AI endpoint
+                const aiResponse = await axios.post("/api/AIChatBot", {
+                  question: fullHistory,
+                });
+
+                if (aiResponse.data.response) {
+                  const aiMessage = {
+                    id: Date.now() + 1,
+                    message: aiResponse.data.response,
+                    sender: "ai_chat_bot",
+                    time: new Date(),
+                  };
+
+                  // Send AI response to the database
+                  await sendMessage(
+                    selectedConversation,
+                    aiMessage.message,
+                    aiMessage.sender
+                  );
+                  setMessages((prevMessages) => [...prevMessages, aiMessage]);
+                }
+              } catch (error) {
+                console.error("Error getting AI response:", error);
+                // Fallback error message
+                const errorMessage = {
+                  id: Date.now() + 1,
+                  message:
+                    "I apologize, but I'm having trouble processing your request right now. Please try again later.",
+                  sender: "ai_chat_bot",
+                  time: new Date(),
+                };
+                await sendMessage(
+                  selectedConversation,
+                  errorMessage.message,
+                  errorMessage.sender
+                );
+                setMessages((prevMessages) => [...prevMessages, errorMessage]);
+              } finally {
+                setIsThinking(false);
+              }
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      }
     }
   };
 
@@ -143,10 +357,29 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
     }
   };
 
+  const handleDeleteMessage = async (messageId: number) => {
+    try {
+      const response = await axios.delete(
+        `/api/message?groupId=${selectedConversation}&channelId=${selectedChannelId}&messageId=${messageId}&requesterId=${currentUserId}`
+      );
+
+      if (response.data.success) {
+        // Update the messages list locally
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== messageId)
+        );
+      }
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.headerText}>Chat with {selectedConversation}</h2>
+        <h2 style={styles.headerText}>
+          Chat with {conversation.users.map((user) => user.username).join(", ")}
+        </h2>
       </div>
 
       <div ref={containerRef} style={styles.messagesContainer}>
@@ -154,10 +387,16 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, selectedConversation }) => {
           <MessageComponent
             key={index}
             content={msgObj.message}
+            users={conversation.users}
+            senderId={msgObj.sender}
             isOwnMessage={msgObj.sender === currentUserId}
             time={msgObj.time}
+            isAdmin={isAdmin && conversation.isGroup}
+            onDelete={() => handleDeleteMessage(msgObj.id)}
+            messageId={msgObj.id}
           />
         ))}
+        {isThinking && <ThinkingAnimation />}
         <div ref={messagesEndRef} />
       </div>
 

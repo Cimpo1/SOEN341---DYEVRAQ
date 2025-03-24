@@ -16,6 +16,7 @@
   height: 100%;
   width: 100%;
   padding: 16px 0;
+  padding-bottom: 0;
 }
 
 .logo {
@@ -29,7 +30,38 @@
 }
 
 .userList {
-  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  padding-bottom: 0;
+  gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #4F46E5 #2c2c2c;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollableContent {
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  top: 110px;
+  bottom: 64px;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  overflow-x: hidden;
+}
+
+.groupList {
   width: 100%;
   overflow-y: auto;
   display: flex;
@@ -39,6 +71,32 @@
   gap: 8px;
   scrollbar-width: thin;
   scrollbar-color: #4F46E5 #2c2c2c;
+  height: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollableGroupContent {
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  top: 65px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  overflow-x: hidden;
+}
+
+.groupCreateButton {
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  margin-top: 8px;
 }
 
 .userIcon {
@@ -61,4 +119,53 @@
 .settings {
   margin-top: auto;
   padding: 16px 0;
+}
+
+.groupContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.channelList {
+  margin-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.channelItem {
+  padding: 4px 8px;
+  color: #9ca3af;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.channelItem:hover {
+  background-color: #3f3f3f;
+  color: #ffffff;
+}
+
+.channelSelected {
+  background-color: #4F46E5;
+  color: #ffffff;
+}
+
+.aiChatContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  background-color: #2c2c2c;
+  padding: 8px 0;
+}
+
+.aiChatContainer:hover {
+  background-color: transparent;
 } 
