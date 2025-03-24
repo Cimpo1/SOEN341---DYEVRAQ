@@ -111,10 +111,6 @@ const styles = {
     backgroundColor: "#3f3f3f",
     color: "#ffffff",
   },
-  createButton: {
-    backgroundColor: "#4F46E5",
-    color: "#ffffff",
-  },
 };
 
 const ChannelSidebar: React.FC<ChannelSidebarProps> = ({

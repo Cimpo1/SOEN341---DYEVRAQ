@@ -223,6 +223,14 @@ const NewConversation: React.FC<CreateConversationProps> = ({
                 </label>
               ))}
             </div>
+            <div>
+              {isGroup && (
+                <p className="note">
+                  To grant or remove a user&apos;s admin access, hover over
+                  their name for 3 seconds after selecting them.
+                </p>
+              )}
+            </div>
             {errorMessage && <div className="error-popup">{errorMessage}</div>}
             <button
               className="submit-btn"
