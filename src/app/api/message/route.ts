@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const { GroupID, message, sender, channelId } = await req.json();
   try {
     const client = await clientPromise;
-    
+
     // Try direct message first
     const directMessage = await client
       .db("DYEVRAQ-DB")
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       : 1;
 
     const result = await group.updateOne(
-      { 
+      {
         _id: new ObjectId(GroupID),
         "channels.id": channelId
       },
@@ -124,7 +124,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const client = await clientPromise;
-    
+
     // Try direct message first
     const directMessage = await client
       .db("DYEVRAQ-DB")
@@ -213,7 +213,7 @@ export async function DELETE(req: NextRequest) {
 
   try {
     const client = await clientPromise;
-    const group = await client.db("DYEVRAQ-DB").collection("group");
+    const group = await client.db("DYEVRAQ-DB").collection<GroupDocument>("group");
 
     // First, check if requester is an admin
     const groupDoc = await group.findOne({
@@ -230,7 +230,7 @@ export async function DELETE(req: NextRequest) {
 
     // Delete the message using $pull operator
     const result = await group.updateOne(
-      { 
+      {
         _id: new ObjectId(groupId),
         "channels.id": channelId
       },
