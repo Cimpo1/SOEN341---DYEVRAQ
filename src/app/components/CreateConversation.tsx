@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./CreateConversation.css";
 import axios from "axios";
+import {HoverState} from "../interfaces/models";
 
 interface CreateConversationProps {
   allUsers: any; // eslint-disable-line
@@ -8,12 +9,6 @@ interface CreateConversationProps {
   buttonText?: string;
   isGroup?: boolean;
   onConversationCreated?: () => void;
-}
-
-interface HoverState {
-  userId: string;
-  startTime: number;
-  timer: NodeJS.Timeout | null;
 }
 
 const NewConversation: React.FC<CreateConversationProps> = ({

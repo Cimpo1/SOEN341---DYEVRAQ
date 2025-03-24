@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Message } from "./Message";
+import { Message } from "../interfaces/models";
 import MessageComponent from "./Message";
 import axios from "axios";
-import { Conversation } from "./HomeContent";
+import { Conversation } from "../interfaces/models";
 import UserIcon from "./UserIcon";
 import "./ThinkingAnimation.css";
 
@@ -12,17 +12,6 @@ interface ChatProps {
   selectedConversation: string;
   selectedChannelId?: string | null;
   onChannelSelect?: (value: string) => void;
-}
-
-interface Channel {
-  id: string;
-  name: string;
-  messages: Array<{
-    id: number;
-    message: string;
-    time: Date;
-    sender: string;
-  }>;
 }
 
 const styles = {

@@ -3,18 +3,10 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ChatSidebar.module.css";
 import UserSection from "./UserSection";
-import { Conversation, Channel } from "./HomeContent";
+import { Conversation, Channel, UserStoredInDB } from "../interfaces/models";
 import CreateConversation from "./CreateConversation";
 import UserIcon from "./UserIcon";
 import axios from "axios";
-
-export interface UserStoredInDB {
-  UserID: string;
-  Email: string;
-  UserName: string;
-  PictureURL: string;
-  Nickname: string;
-}
 
 interface ChatSidebarProps {
   onConversationSelect?: (conversationId: string, channelId?: string) => void;

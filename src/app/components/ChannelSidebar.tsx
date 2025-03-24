@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Channel } from "./HomeContent";
+import { Channel } from "../interfaces/models";
 import axios from "axios";
 
 interface ChannelSidebarProps {

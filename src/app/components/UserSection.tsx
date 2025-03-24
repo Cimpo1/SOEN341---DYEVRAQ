@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./UserSection.module.css";
 import UserIcon from "./UserIcon";
-import { User } from "./HomeContent";
+import { User } from "../interfaces/models";
 
 interface UserSectionProps {
   conversationId: string;

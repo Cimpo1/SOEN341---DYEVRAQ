@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import UserIcon from "./UserIcon";
-import { User } from "./HomeContent";
+import { User } from "../interfaces/models";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-
-export interface Message {
-  id: string;
-  senderId: string;
-  content: string;
-}
 
 interface MessageProps {
   content: string;

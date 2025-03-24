@@ -6,37 +6,7 @@ import Welcome from "./Welcome";
 import Chat from "./Chat";
 import ChannelSidebar from "./ChannelSidebar";
 import axios from "axios";
-
-export interface User {
-  id: string;
-  username: string;
-  url: string;
-}
-
-export interface Channel {
-  id: string;
-  name: string;
-  messages: Array<{
-    id: number;
-    message: string;
-    time: Date;
-    sender: string;
-  }>;
-}
-
-export interface Conversation {
-  _id: string;
-  users: User[];
-  admins: User[];
-  isGroup: boolean;
-  channels?: Channel[];
-  messages?: Array<{
-    id: number;
-    message: string;
-    time: Date;
-    sender: string;
-  }>;
-}
+import { User, Channel, Conversation } from "../interfaces/models";
 
 const styles = {
   container: {
