@@ -1,14 +1,14 @@
-name: Run Tests
+name: Deploy
 
 on:
-  pull_request:
+  push:
     branches:
       - "master"
       - "main"
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: self-hosted
     environment: .env.local
 
@@ -19,3 +19,4 @@ jobs:
           node-version: 23.x
       - run: npm ci
       - run: npm run build
+      - run: npm run start
