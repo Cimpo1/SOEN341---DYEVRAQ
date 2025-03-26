@@ -7,20 +7,8 @@ import Chat from "./Chat";
 import ChannelSidebar from "./ChannelSidebar";
 import axios from "axios";
 import { User, Channel, Conversation } from "../interfaces/models";
+import { stylesHomeContent } from "../stylesComponents/stylesHomeContent";
 
-const styles = {
-  container: {
-    display: "flex",
-    height: "calc(100vh - 21vh)",
-    backgroundColor: "#1a1a1a",
-    width: "100%",
-  },
-  chatArea: {
-    flex: 1,
-    display: "flex",
-    width: "calc(100% - 80px)",
-  },
-};
 // eslint-disable-next-line
 const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   const [selectedConversationId, setSelectedConversationId] = useState<
@@ -176,7 +164,7 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={stylesHomeContent.container}>
       <ChatSidebar
         onConversationSelect={handleConversationSelect}
         session={session}
@@ -200,7 +188,7 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
         groupId={selectedConversation?._id ?? ""}
         onChannelCreated={refreshConversations}
       />
-      <div style={styles.chatArea}>
+      <div style={stylesHomeContent.chatArea}>
         {selectedConversation ? (
           <Chat
             currentUserId={loggedInUserID}
