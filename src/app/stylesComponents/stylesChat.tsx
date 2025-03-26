@@ -1,10 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import "./ThinkingAnimation.css";
-{/*I'm putting a disclaimer every time:
-idk if we need those but just in case i dont wanna break smth
-its easy to delete later anyway*/}
-
 const stylesChat = {
   container: {
     display: "flex",

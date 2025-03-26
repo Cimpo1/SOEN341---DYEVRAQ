@@ -1,9 +1,3 @@
-import React, { useState } from "react";
-import axios from "axios";
-{/*I'm putting a disclaimer every time:
-idk if we need those but just in case i dont wanna break smth
-its easy to delete later anyway*/}
-
 const stylesChannelSidebar = {
       sidebar: {
       width: "200px",
