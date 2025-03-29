@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import "./CreateConversation.css";
+import "../stylesComponents/CreateConversation.css";
 import axios from "axios";
 import {HoverState} from "../interfaces/models";
 

@@ -4,7 +4,7 @@ import MessageComponent from "./Message";
 import axios from "axios";
 import { Conversation } from "../interfaces/models";
 import UserIcon from "./UserIcon";
-import "./ThinkingAnimation.css";
+import "../stylesComponents/ThinkingAnimation.css";
 import { stylesChat } from "../stylesComponents/stylesChat";
 
 interface ChatProps {
