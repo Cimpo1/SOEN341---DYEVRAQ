@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import styles from "./ChatSidebar.module.css";
+import stylesChatSidebar from "../stylesComponents/ChatSidebar.module.css";
 import UserSection from "./UserSection";
 import { Conversation, Channel, UserStoredInDB } from "../interfaces/models";
 import CreateConversation from "./CreateConversation";
@@ -107,9 +107,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const isAIChatSelected = aiChat && selectedConversationId === aiChat._id;
 
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.sidebarContent}>
-        <div className={styles.userList}>
+    <aside className={stylesChatSidebar.sidebar}>
+      <div className={stylesChatSidebar.sidebarContent}>
+        <div className={stylesChatSidebar.userList}>
           <CreateConversation
             allUsers={allUsers}
             session={session}
@@ -124,7 +124,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             key="direct-messages"
             onConversationCreated={onConversationCreated}
           />
-          <div className={styles.scrollableContent}>
+          <div className={stylesChatSidebar.scrollableContent}>
             {filteredDirectMessages.map((conversation, index) => (
               <UserSection
                 key={index}
@@ -135,7 +135,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               />
             ))}
             {groupChats.map((conversation, index) => (
-              <div key={index} className={styles.groupContainer}>
+              <div key={index} className={stylesChatSidebar.groupContainer}>
                 <UserSection
                   conversationId={conversation._id}
                   users={conversation.users}
@@ -145,7 +145,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               </div>
             ))}
           </div>
-          <div className={styles.aiChatContainer}>
+          <div className={stylesChatSidebar.aiChatContainer}>
             <UserSection
               conversationId={aiChat?._id || `aiChatBot_${session.user.sub}`}
               users={[{ id: "ai_chat_bot", username: "🤖", url: "" }]}
