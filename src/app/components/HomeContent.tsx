@@ -77,13 +77,13 @@ const HomeContent: React.FC<{ session: any }> = ({ session }) => {
       axios
         .get(`/api/allUsers`)
         .then((response) => {
-          console.log("Response data:", response.data);
+          {/*console.log("Response data:", response.data);*/}
 
           const processedUsers = response.data.data.filter(
             (user) => user.UserID !== loggedInUserID
           );
 
-          console.log("All Users:", processedUsers);
+          {/*console.log("All Users:", processedUsers);*/}
 
           setAllUsers(processedUsers);
         })

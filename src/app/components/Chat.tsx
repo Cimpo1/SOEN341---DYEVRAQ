@@ -145,7 +145,7 @@ const Chat: React.FC<ChatProps> = ({
               };
 
           const response = await axios.post("/api/message", payload);
-          console.log("Message sent successfully:", response.data);
+          {/*console.log("Message sent successfully:", response.data);*/}
           return response.data;
         } catch (error) {
           console.error("Error sending message:", error);
