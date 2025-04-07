@@ -1,7 +1,7 @@
 import React from "react";
-import styles from "./UserSection.module.css";
+import stylesUserSection from "../stylesComponents/UserSection.module.css";
 import UserIcon from "./UserIcon";
-import { User } from "./HomeContent";
+import { User } from "../interfaces/models";
 
 interface UserSectionProps {
   conversationId: string;
@@ -122,7 +122,7 @@ const UserSection: React.FC<UserSectionProps> = ({
 }) => {
   return (
     <div
-      className={`${styles.section} ${isSelected ? styles.selected : ""}`}
+      className={`${stylesUserSection.section} ${isSelected ? stylesUserSection.selected : ""}`}
       onClick={onClick}
     >
       {users.length > 1 ? (
