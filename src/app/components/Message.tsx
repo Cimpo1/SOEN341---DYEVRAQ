@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import UserIcon from "./UserIcon";
-import { User } from "./HomeContent";
+import { User } from "../interfaces/models";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-
-export interface Message {
-  id: string;
-  senderId: string;
-  content: string;
-}
 
 interface MessageProps {
   content: string;
@@ -21,7 +15,7 @@ interface MessageProps {
   messageId: number;
 }
 
-const styles = {
+const stylesMessage = {
   messageContainer: {
     display: "flex",
     marginBottom: "16px",
@@ -120,14 +114,14 @@ const Message: React.FC<MessageProps> = ({
   return (
     <div
       style={{
-        ...styles.messageContainer,
-        ...(isOwnMessage ? styles.own : styles.other),
+        ...stylesMessage.messageContainer,
+        ...(isOwnMessage ? stylesMessage.own : stylesMessage.other),
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {!isOwnMessage && (
-        <div style={styles.avatarContainer}>
+        <div style={stylesMessage.avatarContainer}>
           <UserIcon
             imageUrl={senderUser ? senderUser.url : ""}
             name={
@@ -141,23 +135,23 @@ const Message: React.FC<MessageProps> = ({
           />
         </div>
       )}
-      <div style={styles.messageContent}>
+      <div style={stylesMessage.messageContent}>
         {!isOwnMessage && !isAIChatBot && (
-          <div style={styles.senderName}>
+          <div style={stylesMessage.senderName}>
             {senderUser ? senderUser.username : "Not found"}
           </div>
         )}
         {!isOwnMessage && isAIChatBot && (
-          <div style={styles.senderName}>AI Assistant</div>
+          <div style={stylesMessage.senderName}>AI Assistant</div>
         )}
         <div
           style={{
-            ...styles.messageBubble,
-            ...(isOwnMessage ? styles.ownBubble : styles.otherBubble),
+            ...stylesMessage.messageBubble,
+            ...(isOwnMessage ? stylesMessage.ownBubble : stylesMessage.otherBubble),
           }}
         >
           {content}
-          <span style={styles.timestamp}>
+          <span style={stylesMessage.timestamp}>
             {new Date(time).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
@@ -170,7 +164,7 @@ const Message: React.FC<MessageProps> = ({
                 onDelete?.();
               }}
               style={{
-                ...styles.deleteButton,
+                ...stylesMessage.deleteButton,
                 right: isOwnMessage ? "auto" : "-10px",
                 left: isOwnMessage ? "-10px" : "auto",
                 opacity: 1,
