@@ -8,6 +8,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     margin: "-10px",
+    fontFamily: "'Roboto', sans-serif",
   },
   navbar: {
     display: "flex",
@@ -24,19 +25,21 @@ const styles: Record<string, CSSProperties> = {
     color: "#A5B4FC",
   },
   buttonLogin: {
-    marginRight: "12px",
-    padding: "10px 16px",
+    marginRight: "17px",
+    padding: "10px 13px",
     backgroundColor: "#4F46E5",
     color: "#fff",
     borderRadius: "8px",
     textDecoration: "none",
+    fontSize: "15px",
   },
   buttonSignup: {
-    padding: "10px 16px",
+    padding: "10px 13px",
     backgroundColor: "#10B981",
     color: "#fff",
     borderRadius: "8px",
     textDecoration: "none",
+    fontSize: "15px",
   },
   heroSection: {
     display: "flex",
