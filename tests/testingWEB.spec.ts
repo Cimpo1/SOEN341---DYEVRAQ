@@ -6,12 +6,11 @@ test('Is the website up?', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'DYEVRAQ', exact: true })).toBeVisible();
 });
 
-test('Is the login Auth0 working?', async ({ page }) => {
+test('Is Auth0 working?', async ({ page }) => {
     await page.goto('http://localhost:3000/');
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await page.getByRole('link', { name: 'Login' }).click();
-    await page.getByRole('textbox', { name: 'Email address' }).click();
-    await page.getByRole('textbox', { name: 'Email address' }).fill('test');
+    await page.getByRole('textbox', { name: 'Email address' }).fill('gggg');
     await page.getByRole('textbox', { name: 'Password' }).click();
     await page.getByRole('textbox', { name: 'Password' }).fill('1234');
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
