@@ -7,6 +7,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+          rel="stylesheet"
+        />
+        <style>{`
+          body {
+            font-family: 'Roboto', sans-serif;
+          }
+        `}</style>
+      </head>
       <body suppressHydrationWarning={true}>{children}</body>
     </html>
   );
