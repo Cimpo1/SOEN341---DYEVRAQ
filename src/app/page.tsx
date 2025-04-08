@@ -48,9 +48,6 @@ export default async function LandingPage() {
             >
               Get Started
             </a>
-            <a href="/about" style={styles.buttonSecondary}>
-              Learn More
-            </a>
           </div>
         </div>
         <div style={styles.heroImageContainer}>
