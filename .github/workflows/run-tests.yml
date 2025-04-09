@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     timeout-minutes: 60
-    runs-on: self-hosted
+    runs-on: github-hosted
     environment: .env.local
 
     steps:
