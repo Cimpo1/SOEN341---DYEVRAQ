@@ -40,7 +40,7 @@ jobs:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
       - name: Install Playwright Browsers
-        run: npx playwright install
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v4
