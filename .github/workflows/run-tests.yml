@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     timeout-minutes: 60
-    runs-on: github-hosted
+    runs-on: ubuntu-latest
     environment: .env.local
 
     steps:
