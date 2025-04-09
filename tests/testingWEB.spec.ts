@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
 test('Is the website up?', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'DYEVRAQ', exact: true })).toBeVisible();
 });
 
 test('Is Auth0 working?', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('gggg');
@@ -18,7 +18,7 @@ test('Is Auth0 working?', async ({ page }) => {
 });
 
 test('Can you login?', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('d_cimpoi@live.concordia.ca');
@@ -33,7 +33,7 @@ test('Can you login?', async ({ page }) => {
 });
 
 test('Can we create a group?', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('d_cimpoi@live.concordia.ca');
     await page.getByRole('textbox', { name: 'Password' }).click();
@@ -50,7 +50,7 @@ test('Can we create a group?', async ({ page }) => {
 });
 
 test('Can you create a conversation?', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('d_cimpoi@live.concordia.ca');
@@ -70,7 +70,7 @@ test('Can you create a conversation?', async ({ page }) => {
 });
 
 test('Can you write a text?', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).click();
@@ -92,7 +92,7 @@ test('Can you write a text?', async ({ page }) => {
 
 
 test('Can you chat with the bot?', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).click();
@@ -112,19 +112,19 @@ test('Can you chat with the bot?', async ({ page }) => {
 });
 
 test('Cannot access home without login', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/home');
+    await page.goto('http://localhost:3000/home');
     await expect(page.getByRole('heading', { name: 'Application error: a client-' })).toBeVisible();
 });
 
 test('Make sure you can sign up', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('section').filter({ hasText: 'Join Millions of Users' }).getByRole('link')).toBeVisible();
     await page.locator('section').filter({ hasText: 'Join Millions of Users' }).getByRole('link').click();
     await expect(page.getByText('Sign Up to dev-')).toBeVisible();
 });
 
 test('Make sure content loads with css', async ({ page }) => {
-    await page.goto('https://dyevraq.cimpo1.com/');
+    await page.goto('http://localhost:3000/');
     await expect(page.getByRole('img', { name: 'LOGO' })).toBeVisible();
     await expect(page.getByText('© 2025 DYEVRAQ. All rights')).toBeVisible();
     await expect(page.getByText('Community ServerCreate public')).toBeVisible();
