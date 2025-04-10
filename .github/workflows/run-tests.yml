@@ -30,7 +30,7 @@ jobs:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
       - name: Start server
-        run: npm run dev & npx wait-on https://dyevraq.cimpo1.com/
+        run: npm run start & npx wait-on https://dyevraq.cimpo1.com/
         env:
           AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
           AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
