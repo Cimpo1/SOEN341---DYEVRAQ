@@ -102,11 +102,14 @@ test('Can you chat with the bot?', async ({ page }) => {
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await expect(page.getByRole('img', { name: 'Welcome' })).toBeVisible();
     await expect(page.locator('div').filter({ hasText: /^🤖$/ }).nth(1)).toBeVisible();
-    await page.locator('div').filter({ hasText: /^🤖$/ }).nth(1).click();
+    await page.getByText('🤖').hover();
+    await page.getByText('🤖').click();
+    await expect(page.getByRole('textbox', { name: 'Type a message...' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Type a message...' }).click();
-    await page.getByRole('textbox', { name: 'Type a message...' }).fill('Hello');
+    await page.getByRole('textbox', { name: 'Type a message...' }).fill('hello');
     await page.getByRole('textbox', { name: 'Type a message...' }).press('Enter');
-    await expect(page.locator('body')).toContainText('Hello');
+    await expect(page.locator('body')).toContainText('AI Assistant');
+    await expect(page.getByRole('link', { name: 'Logout' })).toBeVisible();
     await page.getByRole('link', { name: 'Logout' }).click();
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
 });
