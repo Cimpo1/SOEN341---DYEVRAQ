@@ -43,3 +43,10 @@ next-env.d.ts
 # .CLJ
 /.lsp
 /.clj-kondo
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

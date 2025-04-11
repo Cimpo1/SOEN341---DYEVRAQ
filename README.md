@@ -38,3 +38,7 @@ Database: MongoDB
 - **Real-Time Messaging**: Instant message sending and receiving within group chats.
 - **User Interface**: Clean and responsive design for easy navigation and interaction.
 - **Security**: Implementation of security best practices to protect user data and privacy.
+
+## UML
+
+![alt text](UML.png)
