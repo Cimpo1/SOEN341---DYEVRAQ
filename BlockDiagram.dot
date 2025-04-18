@@ -1,0 +1,57 @@
+digraph DYEVRAQ {
+    rankdir=LR;
+    node [shape=box style=filled fillcolor=lightgray fontname="Helvetica"];
+
+    // Components
+    Home [label="Home\n<<Component>>"];
+    ChannelSidebar [label="ChannelSidebar\n<<Component>>"];
+    Chat [label="Chat\n<<Component>>"];
+    ChatSidebar [label="ChatSidebar\n<<Component>>"];
+    CreateConversation [label="CreateConversation\n<<Component>>"];
+    HomeContent [label="HomeContent\n<<Component>>"];
+    MessageC [label="Message\n<<Component>>"];
+    Navbar [label="Navbar\n<<Component>>"];
+
+    // APIs
+    AIChatBot [label="AIChatBot\n<<API>>" shape=ellipse fillcolor=lightblue];
+    AllUsers [label="AllUsers\n<<API>>" shape=ellipse fillcolor=lightblue];
+    Channel [label="Channel\n<<API>>" shape=ellipse fillcolor=lightblue];
+    DirectMessage [label="DirectMessage\n<<API>>" shape=ellipse fillcolor=lightblue];
+    Group [label="Group\n<<API>>" shape=ellipse fillcolor=lightblue];
+    Message [label="Message\n<<API>>" shape=ellipse fillcolor=lightblue];
+
+    // Databases
+    GroupCollection [label="GroupCollection\n<<DB>>" shape=cylinder fillcolor=lightyellow];
+    DirectMessageCollection [label="DirectMessageCollection\n<<DB>>" shape=cylinder fillcolor=lightyellow];
+    UserCollection [label="UserCollection\n<<DB>>" shape=cylinder fillcolor=lightyellow];
+
+    // Component relationships (composition)
+    Home -> HomeContent ;
+    Home -> Navbar ;
+    HomeContent -> ChannelSidebar ;
+    HomeContent -> ChatSidebar ;
+    HomeContent -> Chat ;
+    ChatSidebar -> CreateConversation ;
+    Chat -> MessageC;
+
+    // API usage by components
+    Chat -> AIChatBot [label="POST"];
+    HomeContent -> AllUsers [label="GET"];
+    CreateConversation -> Group [label="POST"];
+    CreateConversation -> DirectMessage [label="POST"];
+    ChannelSidebar -> Channel [label="POST, GET"];
+    HomeContent -> DirectMessage [label="GET"];
+    HomeContent -> Group [label="GET"];
+    Chat -> Message [label="POST, GET, DELETE"];
+
+    // API to DB connections
+    Group -> GroupCollection [label="accesses"];
+    Message -> GroupCollection [label="accesses"];
+    Channel -> GroupCollection [label="accesses"];
+
+    DirectMessage -> DirectMessageCollection [label="accesses"];
+    Message -> DirectMessageCollection [label="accesses"];
+    AIChatBot -> DirectMessageCollection [label="accesses"];
+
+    AllUsers -> UserCollection [label="accesses"];
+}

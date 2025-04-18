@@ -1,0 +1,122 @@
+@startuml
+class Home <<Component>>{}
+
+class ChannelSidebar <<Component>> {
+  -showCreateModal: boolean
+  -newChannelName: string
+  +ChannelSidebar(props: ChannelSidebarProps): ChannelSidebar
+  +handleCreateChannel(): void
+  +render(): JSX.Element
+}
+
+class Chat <<Component>>{
+  -messages: Message[]
+  -newMessage: string
+  -isThinking: boolean
+  -messagesEndRef: React.RefObject<HTMLDivElement>
+  -containerRef: React.RefObject<HTMLDivElement>
+  -previousMessageLengthRef: React.MutableRefObject<number>
+  -autoScroll: boolean
+  +Chat(props: ChatProps): Chat
+  +handleSendMessage(): void
+  +handleKeyPress(e: React.KeyboardEvent): void
+  +handleDeleteMessage(messageId: number): void
+  +render(): JSX.Element
+}
+
+class ChatSidebar <<Component>>{
+  -mounted: boolean
+  +ChatSidebar(props: ChatSidebarProps): ChatSidebar
+  +handleGroupClick(conversation: Conversation): void
+  +handleAIChatClick(): void
+  +render(): JSX.Element
+}
+
+class CreateConversation <<Component>>{
+  -selectedUsers: any[]
+  -selectedAdmins: string[]
+  -showModal: boolean
+  -errorMessage: string | null
+  -hoverStates: { [key: string]: number }
+  -hoverTimers: { [key: string]: NodeJS.Timeout }
+  +CreateConversation(props: CreateConversationProps): CreateConversation
+  +handleUserSelect(user: any): void
+  +handleUserHover(userId: string, isEntering: boolean): void
+  +getNameStyle(userId: string): { color: string }
+  +showTemporaryError(message: string): void
+  +handleSubmit(): void
+  +render(): JSX.Element
+}
+
+class HomeContent <<Component>>{
+  -selectedConversationId: string | null
+  -selectedChannelId: string | null
+  -selectedConversation: Conversation | null
+  -loggedInUserID: string
+  -directMessages: Conversation[]
+  -groupChats: Conversation[]
+  -ConversationIDs: string[]
+  -AllUsers: User[]
+  +HomeContent(props: { session: any }): HomeContent
+  +handleConversationSelect(conversationId: string, channelId?: string): void
+  +refreshConversations(): void
+  +render(): JSX.Element
+}
+
+class MessageC <<Component>>{
+  -isHovered: boolean
+  +Message(props: MessageProps): Message
+  +render(): JSX.Element
+}
+class Navbar <<Component>>{
+  +Navbar(props: { SESSION: any }): Navbar
+  +capitalizeName(name: string): string
+  +render(): JSX.Element
+}
+
+class AIChatBot <<API>>{
+  +POST(question: NextRequest ): Message
+}
+
+class AllUsers <<API>>{
+  +GET(): userInfo
+}
+
+class Channel <<API>> {
+  +GET(groupid: URL ): Channel[]
+  +POST(groupId, channelName: NextRequest): Boolean
+}
+
+class DirectMessage <<API>> {
+  +GET(userID: URL ): Group[]
+  +POST(user: NextRequest): Boolean
+}
+
+class Group<<API>> {
+  +GET(userID: URL ): Group[]
+  +POST(users[],admins[]: NextRequest): Boolean
+}
+
+class Message <<API>> {
+  +GET(groupID,channelid: URL ): Message[]
+  +POST(message,user,groupid.channelid: NextRequest): Boolean
+  +DELETE(groupid,channelid,requesterid,messageid:url): Boolean
+}
+
+HomeContent "1" *-- "1" ChannelSidebar
+HomeContent "1" *-- "1" ChatSidebar
+HomeContent "1" *-- "1" Chat
+ChatSidebar "1" *-- "1" CreateConversation
+Chat "1" *-- "*" MessageC
+Home "1"*--"1" HomeContent
+Home"1"*--"1" Navbar
+Chat -- AIChatBot:POST
+HomeContent  --  AllUsers :GET
+CreateConversation -- Group:POST
+CreateConversation -- DirectMessage:POST
+ChannelSidebar -- Channel :POST, GET
+HomeContent -- DirectMessage:GET
+HomeContent -- Group:GET
+Chat--Message:POST, GET, DELETE
+
+@enduml
